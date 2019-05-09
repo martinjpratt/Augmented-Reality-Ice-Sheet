@@ -6,15 +6,16 @@ using System;
 using Accord.Math;
 
 
-public class Build3DSheet : MonoBehaviour {
+public class Build3DSheet : MonoBehaviour
+{
 
-	public float J = 40;
-	public float dtyears = 20.0f;
-	public float L = 1200e3f;
-	public float t1 = 200;
-	public float t2 = 20000;
-	public float secpera = 31556926;
-    public double[,] Mnew = new double[41,41];
+    public float J = 40;
+    public float dtyears = 20.0f;
+    public float L = 1200e3f;
+    public float t1 = 200;
+    public float t2 = 20000;
+    public float secpera = 31556926;
+    public double[,] Mnew = new double[41, 41];
 
     double[,] Hinit;
     double[,] a;
@@ -42,25 +43,27 @@ public class Build3DSheet : MonoBehaviour {
     private UnityEngine.Vector3[] vertices;
     Mesh mesh;
 
-	// Use this for initialization
-	void Start () {
-		float dx = 2 * L / J;
+    // Use this for initialization
+    void Start()
+    {
 
-		float[] x_temp = new float[(int)(2 * L / dx) + 1];
-		float[] y_temp = new float[(int)(2 * L / dx) + 1];
-		for (int i = 0; i < x_temp.Length; i++) {
-			x_temp [i] = -L + (i * dx);
-			y_temp [i] = -L + (i * dx);
-		}
+        //Generate a matrix of points
+        float dx = 2 * L / J;
+        float[] x_temp = new float[(int)(2 * L / dx) + 1];
+        float[] y_temp = new float[(int)(2 * L / dx) + 1];
+        for (int i = 0; i < x_temp.Length; i++)
+        {
+            x_temp[i] = -L + (i * dx);
+            y_temp[i] = -L + (i * dx);
+        }
+        var M = Matrix.MeshGrid(x_temp, y_temp);
 
-		var M = Matrix.MeshGrid (x_temp, y_temp);
-
-
-        double[,] H1 = halfar (t1 * secpera, M.Item1, M.Item2);
+        double[,] H1 = halfar(t1 * secpera, M.Item1, M.Item2);
 
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-        mesh.name = "Procedural Grid";
-        
+        mesh.name = "Ice Sheet Surface";
+
+        //Build the intial condition
         Generate(H1);
 
         Hinit = Elementwise.Multiply(H1, 0.5f);
@@ -69,6 +72,7 @@ public class Build3DSheet : MonoBehaviour {
 
     }
 
+    //This makes the surface of the mesh.
     private void Generate(double[,] h)
     {
         int xSize = 40;
@@ -79,7 +83,7 @@ public class Build3DSheet : MonoBehaviour {
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
-                vertices[i] = new UnityEngine.Vector3(x, (float)h[x,y], y);
+                vertices[i] = new UnityEngine.Vector3(x, (float)h[x, y], y);
                 uv[i] = new Vector2(x / xSize, y / zSize);
             }
         }
@@ -107,20 +111,21 @@ public class Build3DSheet : MonoBehaviour {
 
 
 
+    //This generates the initial condition.
+    double[,] halfar(float t, float[,] x, float[,] y)
+    {
 
-    double[,] halfar(float t, float[,] x, float[,] y){
+        float g = 9.81f;
+        float rho = 910.0f;
+        float n = 3;
+        float A = 1.0e-16f / secpera;
+        float Gamma = 2 * A * Mathf.Pow(rho * g, 3) / 5;
 
-		float g = 9.81f;
-		float rho = 910.0f;
-		float n = 3;
-		float A = 1.0e-16f / secpera;
-		float Gamma = 2 * A * Mathf.Pow(rho * g, 3) / 5;
-
-		float H0 = 3600;
-		float R0 = 750e3f;
-		float alpha = 1f/9f;
-		float beta = 1f/18f;
-		float t0 = (beta/Gamma) * Mathf.Pow(7f/4f,3) * (Mathf.Pow(R0,4)/Mathf.Pow(H0,7));
+        float H0 = 3600;
+        float R0 = 750e3f;
+        float alpha = 1f / 9f;
+        float beta = 1f / 18f;
+        float t0 = (beta / Gamma) * Mathf.Pow(7f / 4f, 3) * (Mathf.Pow(R0, 4) / Mathf.Pow(H0, 7));
 
         var xPow = x.Pow(2);
         var yPow = y.Pow(2);
@@ -146,7 +151,7 @@ public class Build3DSheet : MonoBehaviour {
         {
             for (int j = 0; j < 41; j++)
             {
-                if (inside[i,j] < 0)
+                if (inside[i, j] < 0)
                 {
                     inside[i, j] = 0;
                 }
@@ -163,12 +168,11 @@ public class Build3DSheet : MonoBehaviour {
         inside = inside.Divide(tAlpha);
         var H1 = Elementwise.Multiply(H0, inside);
         return H1;
-	}
+    }
 
-
-    
-	// Update is called once per frame
-	void Update () {
+    // Update is called once per frame
+    void Update()
+    {
 
         float Lx = L;
         float Ly = L;
@@ -178,9 +182,9 @@ public class Build3DSheet : MonoBehaviour {
         float tf = 10e4f * secpera;
         double[,] b = a;
         double[,] M0 = a;
-        float A = 1e-15f/secpera;
+        float A = 1e-15f / secpera;
 
-        
+
         float Gamma = 2 * A * Mathf.Pow(rho * g, 3) / 5;
         float f1 = rho / rhow;
 
@@ -188,8 +192,8 @@ public class Build3DSheet : MonoBehaviour {
         float dy = 2f * Ly / K;
         float N = 5000f;
         deltat = tf / N;
-        
-        
+
+
         for (int i = 0; i < 39; i++)
         {
             j[i] = i + 1;
@@ -205,7 +209,7 @@ public class Build3DSheet : MonoBehaviour {
             H = H0;
         }
 
-        HTemp0 = H.Get(j,nk);
+        HTemp0 = H.Get(j, nk);
         HTemp1 = H.Get(j, k);
         HTemp2 = HTemp0.Add(HTemp1);
         double[,] Hup = Elementwise.Multiply(HTemp2, 0.5);
@@ -288,13 +292,14 @@ public class Build3DSheet : MonoBehaviour {
         double[,] tempDlt = Elementwise.Multiply(Hup.Pow(5), a2lt);
         double[,] Dlt = Elementwise.Multiply(Gamma, tempDlt);
 
-        
+        //Now run the diffusion to produce the next set of grid points
         H = diffusion2(Lx, Ly, J, K, Dup, Ddn, Drt, Dlt, H, deltat, Mnew, b);
 
         t = t + deltat;
         Mnew = new double[41, 41];
     }
-    
+
+    //Diffusion function
     private double[,] diffusion2(float Lx, float Ly, float J, float K, double[,] Dup, double[,] Ddown, double[,] Dright, double[,] Dleft, double[,] T0, float tf, double[,] F, double[,] b)
     {
         float dx = 2 * (Lx / J);
@@ -311,56 +316,56 @@ public class Build3DSheet : MonoBehaviour {
         double maxD = 0;
         //while (t < tf)
         //{
-            for (int m = 0; m < 39; m++)
+        for (int m = 0; m < 39; m++)
+        {
+            for (int n = 0; n < 39; n++)
             {
-                for (int n = 0; n < 39; n++)
+                if (Dup[m, n] > maxDup)
                 {
-                    if (Dup[m, n] > maxDup)
-                    {
-                        maxDup = Dup[m, n];
-                    }
-                    if (Ddown[m, n] > maxDdn)
-                    {
-                        maxDdn = Ddown[m, n];
-                    }
-                    if (Dright[m, n] > maxDrt)
-                    {
-                        maxDrt = Dright[m, n];
-                    }
-                    if (Dleft[m, n] > maxDlt)
-                    {
-                        maxDlt = Dleft[m, n];
-                    }
+                    maxDup = Dup[m, n];
+                }
+                if (Ddown[m, n] > maxDdn)
+                {
+                    maxDdn = Ddown[m, n];
+                }
+                if (Dright[m, n] > maxDrt)
+                {
+                    maxDrt = Dright[m, n];
+                }
+                if (Dleft[m, n] > maxDlt)
+                {
+                    maxDlt = Dleft[m, n];
                 }
             }
+        }
 
-            if (maxDup > maxD)
-            {
-                maxD = maxDup;
-            }
-            if (maxDdn > maxD)
-            {
-                maxD = maxDdn;
-            }
-            if (maxDrt > maxD)
-            {
-                maxD = maxDrt;
-            }
-            if (maxDlt > maxD)
-            {
-                maxD = maxDlt;
-            }
+        if (maxDup > maxD)
+        {
+            maxD = maxDup;
+        }
+        if (maxDdn > maxD)
+        {
+            maxD = maxDdn;
+        }
+        if (maxDrt > maxD)
+        {
+            maxD = maxDrt;
+        }
+        if (maxDlt > maxD)
+        {
+            maxD = maxDlt;
+        }
 
 
-            if (maxD <= 0.0f)
-            {
-                dt = tf - t;
-            }
-            else
-            {
-                var dt0 = 0.25f * (Mathf.Pow(dx, 2) / maxD);
-                dt = Math.Min(dt0, tf - t);
-            }
+        if (maxD <= 0.0f)
+        {
+            dt = tf - t;
+        }
+        else
+        {
+            var dt0 = 0.25f * (Mathf.Pow(dx, 2) / maxD);
+            dt = Math.Min(dt0, tf - t);
+        }
 
         var mu_x = dt / (dx * dx);
         var mu_y = dt / (dy * dy);
@@ -383,12 +388,12 @@ public class Build3DSheet : MonoBehaviour {
         }
         //print(T.Length);
 
+        T = T.Add(Elementwise.Multiply(F, dt));
 
+        Generate(T);
 
-        Generate(T.Add(Elementwise.Multiply(F,dt)));
-        
         return T;
         //}
     }
-    
+
 }

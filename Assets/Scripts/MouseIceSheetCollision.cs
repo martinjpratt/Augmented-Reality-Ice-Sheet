@@ -2,31 +2,24 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class MouseIceSheetCollision : MonoBehaviour {
+public class MouseIceSheetCollision : MonoBehaviour
+{
 
     public GameObject dot;
     public int nearestVertexIndex;
-    public float  accumualtionIncrement;
+    public float accumualtionIncrement;
 
     // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
+    void Start()
+    {
+
+    }
+
+    // Update is called once per frame
+    void Update()
+    {
         if (Input.GetMouseButtonDown(0))
         {
-            this.GetComponent<Build3DSheet>().Mnew[5, 5] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[5, 6] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[5, 7] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[6, 5] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[6, 6] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[6, 7] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[7, 5] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[7, 6] += accumualtionIncrement;
-            this.GetComponent<Build3DSheet>().Mnew[7, 7] += accumualtionIncrement; 
-            /*
             RaycastHit hit;
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
 
@@ -36,7 +29,7 @@ public class MouseIceSheetCollision : MonoBehaviour {
                 Vector3 point = hit.point;
 
                 Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
-                
+
                 float minDistanceSqr = Mathf.Infinity;
                 Vector3 nearestVertex = Vector3.zero;
                 // scan all vertices to find nearest
@@ -52,13 +45,17 @@ public class MouseIceSheetCollision : MonoBehaviour {
                     }
                 }
 
-                this.GetComponent<Build3DSheet>().Mnew[nearestVertexIndex % 41, (int)Mathf.Floor((float)nearestVertexIndex / 41f)] = 0.2/31556926f;
-
-                //GameObject newPoint = Instantiate(dot, hit.transform);
-                //newPoint.transform.localPosition = nearestVertex;
-                //newPoint.transform.localScale = new Vector3(1, 1000, 1);
+                this.GetComponent<Build3DSheet>().Mnew[nearestVertexIndex % 41, (int)Mathf.Floor((float)nearestVertexIndex / 41f)] = accumualtionIncrement; // 0.2/31556926f;
+                this.GetComponent<Build3DSheet>().Mnew[nearestVertexIndex % 41, (int)Mathf.Floor((float)nearestVertexIndex / 41f) + 1] = accumualtionIncrement;
+                this.GetComponent<Build3DSheet>().Mnew[nearestVertexIndex % 41, (int)Mathf.Floor((float)nearestVertexIndex / 41f) - 1] = accumualtionIncrement;
+                this.GetComponent<Build3DSheet>().Mnew[(nearestVertexIndex % 41) + 1, (int)Mathf.Floor((float)nearestVertexIndex / 41f)] = accumualtionIncrement;
+                this.GetComponent<Build3DSheet>().Mnew[(nearestVertexIndex % 41) + 1, (int)Mathf.Floor((float)nearestVertexIndex / 41f) + 1] = accumualtionIncrement;
+                this.GetComponent<Build3DSheet>().Mnew[(nearestVertexIndex % 41) + 1, (int)Mathf.Floor((float)nearestVertexIndex / 41f) - 1] = accumualtionIncrement;
+                this.GetComponent<Build3DSheet>().Mnew[(nearestVertexIndex % 41) - 1, (int)Mathf.Floor((float)nearestVertexIndex / 41f)] = accumualtionIncrement;
+                this.GetComponent<Build3DSheet>().Mnew[(nearestVertexIndex % 41) - 1, (int)Mathf.Floor((float)nearestVertexIndex / 41f) + 1] = accumualtionIncrement;
+                this.GetComponent<Build3DSheet>().Mnew[(nearestVertexIndex % 41) - 1, (int)Mathf.Floor((float)nearestVertexIndex / 41f) - 1] = accumualtionIncrement;
             }
-            */
+
         }
     }
 }
