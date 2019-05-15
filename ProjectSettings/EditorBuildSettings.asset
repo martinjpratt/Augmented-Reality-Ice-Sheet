@@ -6,5 +6,5 @@ EditorBuildSettings:
   serializedVersion: 2
   m_Scenes:
   - enabled: 1
-    path: Assets/ARIceSheet.unity
-    guid: 1ea1db6ffd0e87c48a94308353cf6b4b
+    path: Assets/ARIceSheet3D.unity
+    guid: 28a728f165b173d46aefd61a4e5486f5

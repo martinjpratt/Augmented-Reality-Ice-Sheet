@@ -16,6 +16,9 @@ public class Build3DSheet : MonoBehaviour
     public float t2 = 20000;
     public float secpera = 31556926;
     public double[,] Mnew = new double[41, 41];
+    public bool runModel = false;
+    public float gammaDenumerator = 5;
+    public float dt0Mulitplier = 0.25f;
 
     double[,] Hinit;
     double[,] a;
@@ -35,7 +38,7 @@ public class Build3DSheet : MonoBehaviour
     double[,] hTemp4;
     double[,] hTemp5;
     double[,] H = null;
-    float t = 0;
+    float modelt = 0;
     float g = 9.81f;
     float rho = 910.0f;
     float rhow = 1028.0f;
@@ -43,10 +46,26 @@ public class Build3DSheet : MonoBehaviour
     private UnityEngine.Vector3[] vertices;
     Mesh mesh;
 
+    //UI Section
+    public void selectRunModel()
+    {
+        runModel = true;
+    }
+
+    public void deselectRunModel()
+    {
+        runModel = false;
+    }
+
+
     // Use this for initialization
     void Start()
     {
+        InitiateModel();
+    }
 
+    public void InitiateModel()
+    {
         //Generate a matrix of points
         float dx = 2 * L / J;
         float[] x_temp = new float[(int)(2 * L / dx) + 1];
@@ -68,8 +87,7 @@ public class Build3DSheet : MonoBehaviour
 
         Hinit = Elementwise.Multiply(H1, 0.5f);
         a = Matrix.Zeros(41, 41);
-
-
+        H = null;
     }
 
     //This makes the surface of the mesh.
@@ -83,6 +101,11 @@ public class Build3DSheet : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
+                if (h[x,y] < 0)
+                {
+                    h[x, y] = 0;
+                }
+
                 vertices[i] = new UnityEngine.Vector3(x, (float)h[x, y], y);
                 uv[i] = new Vector2(x / xSize, y / zSize);
             }
@@ -173,7 +196,14 @@ public class Build3DSheet : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (runModel)
+        {
+            RunModel();
+        }
+    }
 
+    public void RunModel()
+    {
         float Lx = L;
         float Ly = L;
         float K = J;
@@ -185,12 +215,12 @@ public class Build3DSheet : MonoBehaviour
         float A = 1e-15f / secpera;
 
 
-        float Gamma = 2 * A * Mathf.Pow(rho * g, 3) / 5;
+        float Gamma = 2 * A * Mathf.Pow(rho * g, 3) / gammaDenumerator;
         float f1 = rho / rhow;
 
         float dx = 2f * Lx / J;
         float dy = 2f * Ly / K;
-        float N = 5000f;
+        float N = Mathf.Ceil(tf / deltat);
         deltat = tf / N;
 
 
@@ -245,7 +275,6 @@ public class Build3DSheet : MonoBehaviour
         a2temp2 = a2temp2.Divide(denom4);
         double[,] a2up = a2temp1.Add(a2temp2);
 
-
         hTemp0 = h.Get(ej, k);
         hTemp1 = h.Get(ej, sk);
         hTemp2 = h.Get(wj, k);
@@ -281,23 +310,25 @@ public class Build3DSheet : MonoBehaviour
         a2temp2 = hTemp4.Subtract(hTemp5).Pow(2);
         a2temp2 = a2temp2.Divide(denom3);
         double[,] a2lt = a2temp1.Add(a2temp2);
-
+        
 
         double[,] tempDup = Elementwise.Multiply(Hup.Pow(5), a2up);
         double[,] Dup = Elementwise.Multiply(Gamma, tempDup);
-        double[,] tempDdn = Elementwise.Multiply(Hup.Pow(5), a2dn);
+        double[,] tempDdn = Elementwise.Multiply(Hdn.Pow(5), a2dn);
         double[,] Ddn = Elementwise.Multiply(Gamma, tempDdn);
-        double[,] tempDrt = Elementwise.Multiply(Hup.Pow(5), a2rt);
+        double[,] tempDrt = Elementwise.Multiply(Hrt.Pow(5), a2rt);
         double[,] Drt = Elementwise.Multiply(Gamma, tempDrt);
-        double[,] tempDlt = Elementwise.Multiply(Hup.Pow(5), a2lt);
+        double[,] tempDlt = Elementwise.Multiply(Hlt.Pow(5), a2lt);
         double[,] Dlt = Elementwise.Multiply(Gamma, tempDlt);
 
         //Now run the diffusion to produce the next set of grid points
         H = diffusion2(Lx, Ly, J, K, Dup, Ddn, Drt, Dlt, H, deltat, Mnew, b);
 
-        t = t + deltat;
+        modelt = modelt + deltat;
         Mnew = new double[41, 41];
     }
+
+
 
     //Diffusion function
     private double[,] diffusion2(float Lx, float Ly, float J, float K, double[,] Dup, double[,] Ddown, double[,] Dright, double[,] Dleft, double[,] T0, float tf, double[,] F, double[,] b)
@@ -306,7 +337,7 @@ public class Build3DSheet : MonoBehaviour
         float dy = 2 * (Ly / K);
         double dt;
         float t = 0.0f;
-        int count = 0;
+        //int count = 0;
         var T = T0;
 
         double maxDup = 0;
@@ -316,6 +347,15 @@ public class Build3DSheet : MonoBehaviour
         double maxD = 0;
         //while (t < tf)
         //{
+
+        //double[] DmaxArray = new double[4];
+        //DmaxArray[0] = Dup.Cast<double>().Max();
+        //DmaxArray[0] = Ddown.Cast<double>().Max();
+        //DmaxArray[0] = Dright.Cast<double>().Max();
+        //DmaxArray[0] = Dleft.Cast<double>().Max();
+        //maxD = DmaxArray.Cast<double>().Max();
+
+        
         for (int m = 0; m < 39; m++)
         {
             for (int n = 0; n < 39; n++)
@@ -355,15 +395,15 @@ public class Build3DSheet : MonoBehaviour
         {
             maxD = maxDlt;
         }
-
+        
 
         if (maxD <= 0.0f)
         {
             dt = tf - t;
         }
         else
-        {
-            var dt0 = 0.25f * (Mathf.Pow(dx, 2) / maxD);
+        {   
+            var dt0 = dt0Mulitplier * (Mathf.Pow(dx, 2) / maxD);
             dt = Math.Min(dt0, tf - t);
         }
 
@@ -387,7 +427,7 @@ public class Build3DSheet : MonoBehaviour
             }
         }
         //print(T.Length);
-
+        t = t + (float)dt;
         T = T.Add(Elementwise.Multiply(F, dt));
 
         Generate(T);

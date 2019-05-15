@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 
 public class MouseInputMover : MonoBehaviour {
 
@@ -12,7 +13,8 @@ public class MouseInputMover : MonoBehaviour {
 	public float zoomMax = 20.0f;
 	public float distance ;
 	public Vector3 position;
-	public bool isActivated;
+    public bool targetHit;
+    public bool isActivated;
 	float x = 0.0f;
 	float y = 0.0f;
 
@@ -28,7 +30,16 @@ public class MouseInputMover : MonoBehaviour {
 		// only update if the mousebutton is held down
 		if (Input.GetMouseButtonDown(0)){
 			isActivated = true;
-		} 
+            if (EventSystem.current.IsPointerOverGameObject())
+            {
+                targetHit = false;
+            }
+            else
+            {
+                targetHit = true;
+            }
+
+        } 
 
 		// if mouse button is let UP then stop rotating camera
 		if (Input.GetMouseButtonUp(0))
@@ -36,7 +47,7 @@ public class MouseInputMover : MonoBehaviour {
 			isActivated = false;
 		} 
 
-		if (target && isActivated) { 
+		if (target && isActivated && targetHit) { 
 			//  get the distance the mouse moved in the respective direction
 			x += Input.GetAxis("Mouse X") * xSpeed;
 			y -= Input.GetAxis("Mouse Y") * ySpeed;	 
