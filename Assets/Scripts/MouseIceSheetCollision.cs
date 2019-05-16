@@ -41,7 +41,7 @@ public class MouseIceSheetCollision : MonoBehaviour
             if (Physics.Raycast(ray, out hit))
             {
                 Vector3 point = hit.point;
-
+                this.GetComponent<MoveCloudSun>().hitPosition = hit.point;
                 Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
                 
                 float minDistanceSqr = Mathf.Infinity;

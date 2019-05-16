@@ -344,9 +344,11 @@
     <Compile Include="Assets\Scripts\MeshDeformer.cs" />
     <Compile Include="Assets\Scripts\MouseIceSheetCollision.cs" />
     <Compile Include="Assets\Scripts\MouseInputMover.cs" />
+    <Compile Include="Assets\Scripts\MoveCloudSun.cs" />
     <Compile Include="Assets\Scripts\MoveMarker.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Assets\Data\bedmap2_surf.txt" />
     <None Include="Assets\Shaders\HeightShader.shader" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

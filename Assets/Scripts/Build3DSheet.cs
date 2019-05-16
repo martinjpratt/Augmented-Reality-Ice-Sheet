@@ -8,7 +8,7 @@ using Accord.Math;
 
 public class Build3DSheet : MonoBehaviour
 {
-
+    public TextAsset AntarcticSurface;
     public float J = 40;
     public float dtyears = 20.0f;
     public float L = 1200e3f;
@@ -80,7 +80,31 @@ public class Build3DSheet : MonoBehaviour
         double[,] H1 = halfar(t1 * secpera, M.Item1, M.Item2);
 
         GetComponent<MeshFilter>().mesh = mesh = new Mesh();
-        mesh.name = "Ice Sheet Surface";
+        mesh.name = "Generic Ice Sheet Surface";
+
+        //Build the intial condition
+        Generate(H1);
+
+        Hinit = Elementwise.Multiply(H1, 0.5f);
+        a = Matrix.Zeros(41, 41);
+        H = null;
+    }
+
+    public void InitiateAntarctica()
+    {
+        double[,] H1 = new double[41, 41];
+        string[] lineData = AntarcticSurface.text.Split("\n"[0]);
+        for (int i = 0; i < lineData.Length; i++)
+        {
+            string[] elementData = lineData[i].Split(","[0]);
+            for (int j = 0; j < elementData.Length; j++)
+            {
+                H1[i, j] = double.Parse(elementData[j]);
+            }
+        }
+
+        GetComponent<MeshFilter>().mesh = mesh = new Mesh();
+        mesh.name = "Antarctica Ice Sheet Surface";
 
         //Build the intial condition
         Generate(H1);
