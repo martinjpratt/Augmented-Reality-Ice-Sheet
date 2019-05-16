@@ -5,4 +5,4 @@ The model is interactive, the user can change the mass balance over part of the 
 
 
 To test it out, visit the WebGL version of the application here:
-http://epsc.wustl.edu/~martinpratt/ARIceSheetWeb
+https://martinjpratt.github.io/ARIceSheetWeb/App3D/index.html
