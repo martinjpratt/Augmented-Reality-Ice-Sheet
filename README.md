@@ -5,4 +5,4 @@ The model is interactive, the user can change the mass balance over part of the 
 
 
 To test it out, visit the WebGL version of the application here:
-https://martinjpratt.github.io/ARIceSheetWeb/App3D/index.html
+https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html
