@@ -1,5 +1,7 @@
+---
 theme: jekyll-theme-slate
 title: Augmented Reality Ice Sheet Development
+---
 
 This is the source code for the development of an AR Ice Sheet; a Unity project that simulates the 3D deformation of an ice sheet based on the Shallow Ice Approximation (SIA).
 Initially this application will be build using WebGL to provide better collaboration and development during . Subsequently we will switch development to Microsoft's HoloLens HMD, and also (hopefully) mobile AR. The objective being to show a simple example of how mass balance can affect an ice sheet as well as understand the time scales involved. For the HoloLens app, we are intending to use real world objects to change the bed "topography" and affect ice sheet flow.
