@@ -1,1 +1,42 @@
-"<h1>Hello</h1>" 
+<!DOCTYPE html>
+<html lang="en-us">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>Unity WebGL Player | ARIceSheetWeb</title>
+    <link rel="shortcut icon" href="TemplateData/favicon.ico">
+    <link rel="stylesheet" href="TemplateData/style.css">
+    <script src="TemplateData/UnityProgress.js"></script>
+    <script src="Build/UnityLoader.js"></script>
+    <script>
+        var gameInstance = UnityLoader.instantiate("gameContainer", "Build/App3D.json", { onProgress: UnityProgress });
+    </script>
+</head>
+
+    
+
+
+
+<body>
+    <h1>Augmented Reality Ice Sheet - WebGL version</h1>
+
+    <p>
+        This is the source code for the development of an AR Ice Sheet; a Unity project that simulates the 3D deformation of an ice sheet based on the Shallow Ice Approximation (SIA).
+        Initially this application will be build using WebGL to provide better collaboration and development during . Subsequently we will switch development to Microsoft's HoloLens HMD, and also (hopefully) mobile AR. The objective being to show a simple example of how mass balance can affect an ice sheet as well as understand the time scales involved. For the HoloLens app, we are intending to use real world objects to change the bed "topography" and affect ice sheet flow.
+        The SIA is computationally efficient, so lends itself well to real time animation. Some extra information about the SIA and other ice sheet modeling techniques can be found here: http://www.antarcticglaciers.org/glaciers-and-climate/numerical-ice-sheet-models/hierarchy-ice-sheet-models-introduction/
+        The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position anf the UI slider.
+        To test it out, try the WebGL version of the application here:
+
+    </p>
+
+    <div class="webgl-content">
+        <div id="gameContainer" style="width: 1920px; height: 1080px"></div>
+        <div class="footer">
+            <div class="webgl-logo"></div>
+            <div class="fullscreen" onclick="gameInstance.SetFullscreen(1)"></div>
+            <div class="title">ARIceSheetWeb</div>
+        </div>
+    </div>
+</body>
+</html>
