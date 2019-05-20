@@ -5564,7 +5564,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1895421796}
   - component: {fileID: 1895421801}
-  - component: {fileID: 1895421800}
+  - component: {fileID: 1895421799}
   - component: {fileID: 1895421798}
   - component: {fileID: 1895421802}
   - component: {fileID: 1895421803}
@@ -5619,7 +5619,7 @@ MeshCollider:
   m_CookingOptions: 14
   m_SkinWidth: 0.01
   m_Mesh: {fileID: 0}
---- !u!23 &1895421800
+--- !u!23 &1895421799
 MeshRenderer:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}

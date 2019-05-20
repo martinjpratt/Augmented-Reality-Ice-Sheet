@@ -5,7 +5,6 @@ using System.Linq;
 using System;
 using Accord.Math;
 
-
 public class Build3DSheet : MonoBehaviour
 {
     public TextAsset AntarcticSurface;
@@ -42,9 +41,21 @@ public class Build3DSheet : MonoBehaviour
     float g = 9.81f;
     float rho = 910.0f;
     float rhow = 1028.0f;
+    int xSize = 40;
+    int zSize = 40;
 
     private UnityEngine.Vector3[] vertices;
+    private Vector2[] uv;
+    private int[] triangles;
+    List<UnityEngine.Vector3> vertexBuffer;
+    List<int> trisBuffer;
+
     Mesh mesh;
+
+    MeshCollider meshCollider;
+    MeshFilter meshFilter;
+
+    int GCcounter = 0;
 
     //UI Section
     public void selectRunModel()
@@ -55,12 +66,18 @@ public class Build3DSheet : MonoBehaviour
     public void deselectRunModel()
     {
         runModel = false;
+        Resources.UnloadUnusedAssets();
     }
 
 
     // Use this for initialization
     void Start()
     {
+        meshCollider = this.GetComponent<MeshCollider>();
+        meshFilter = this.GetComponent<MeshFilter>();
+        vertexBuffer = new List<UnityEngine.Vector3>((xSize + 1) * (zSize + 1));
+        triangles = new int[xSize * zSize * 6];
+
         InitiateModel();
     }
 
@@ -75,12 +92,14 @@ public class Build3DSheet : MonoBehaviour
             x_temp[i] = -L + (i * dx);
             y_temp[i] = -L + (i * dx);
         }
-        var M = Matrix.MeshGrid(x_temp, y_temp);
+        Tuple<float[,],float[,]> M = Matrix.MeshGrid(x_temp, y_temp);
 
         double[,] H1 = halfar(t1 * secpera, M.Item1, M.Item2);
 
-        GetComponent<MeshFilter>().mesh = mesh = new Mesh();
+        mesh = new Mesh();
         mesh.name = "Generic Ice Sheet Surface";
+
+        initTriangles();
 
         //Build the intial condition
         Generate(H1);
@@ -103,8 +122,10 @@ public class Build3DSheet : MonoBehaviour
             }
         }
 
-        GetComponent<MeshFilter>().mesh = mesh = new Mesh();
+        mesh = new Mesh();
         mesh.name = "Antarctica Ice Sheet Surface";
+
+        initTriangles();
 
         //Build the intial condition
         Generate(H1);
@@ -114,13 +135,28 @@ public class Build3DSheet : MonoBehaviour
         H = null;
     }
 
+
+    private void initTriangles()
+    {       
+        for (int ti = 0, vi = 0, y = 0; y < zSize; y++, vi++)
+        {
+            for (int x = 0; x < xSize; x++, ti += 6, vi++)
+            {
+                triangles[ti] = vi;
+                triangles[ti + 3] = triangles[ti + 2] = vi + 1;
+                triangles[ti + 4] = triangles[ti + 1] = vi + xSize + 1;
+                triangles[ti + 5] = vi + xSize + 2;
+
+            }
+        }
+    }
+
+
     //This makes the surface of the mesh.
     private void Generate(double[,] h)
     {
-        int xSize = 40;
-        int zSize = 40;
-        vertices = new UnityEngine.Vector3[(xSize + 1) * (zSize + 1)];
-        Vector2[] uv = new Vector2[vertices.Length];
+        vertexBuffer.Clear();
+
         for (int i = 0, y = 0; y <= zSize; y++)
         {
             for (int x = 0; x <= xSize; x++, i++)
@@ -130,30 +166,24 @@ public class Build3DSheet : MonoBehaviour
                     h[x, y] = 0;
                 }
 
-                vertices[i] = new UnityEngine.Vector3(x, (float)h[x, y], y);
-                uv[i] = new Vector2(x / xSize, y / zSize);
+                vertexBuffer.Add(new UnityEngine.Vector3(x, (float)h[x, y], y));
             }
         }
-        mesh.vertices = vertices;
-        mesh.uv = uv;
-
-        int[] triangles = new int[xSize * zSize * 6];
-        for (int ti = 0, vi = 0, y = 0; y < zSize; y++, vi++)
-        {
-            for (int x = 0; x < xSize; x++, ti += 6, vi++)
-            {
-                triangles[ti] = vi;
-                triangles[ti + 3] = triangles[ti + 2] = vi + 1;
-                triangles[ti + 4] = triangles[ti + 1] = vi + xSize + 1;
-                triangles[ti + 5] = vi + xSize + 2;
-            }
-        }
+        mesh.Clear();
+        mesh.SetVertices(vertexBuffer);
         mesh.triangles = triangles;
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
-        GetComponent<MeshCollider>().sharedMesh = mesh;
-        GetComponent<MeshFilter>().mesh = mesh;
+
+        meshFilter.sharedMesh = mesh;
+        meshCollider.sharedMesh = mesh;
+        GCcounter++;
+        if (GCcounter==200)
+        {
+            Resources.UnloadUnusedAssets();
+            GCcounter = 0;
+        }
     }
 
 
@@ -174,11 +204,11 @@ public class Build3DSheet : MonoBehaviour
         float beta = 1f / 18f;
         float t0 = (beta / Gamma) * Mathf.Pow(7f / 4f, 3) * (Mathf.Pow(R0, 4) / Mathf.Pow(H0, 7));
 
-        var xPow = x.Pow(2);
-        var yPow = y.Pow(2);
+        float[,] xPow = x.Pow(2);
+        float[,] yPow = y.Pow(2);
 
-        var zPow = xPow.Add(yPow);
-        var r = zPow.Sqrt();
+        float[,] zPow = xPow.Add(yPow);
+        double[,] r = zPow.Sqrt();
 
         r = r.Divide(R0);
         t = t / t0;
@@ -192,7 +222,7 @@ public class Build3DSheet : MonoBehaviour
         r = r.Subtract(1);
         r = Elementwise.Multiply(r, -1);
 
-        var inside = r;
+        double[,] inside = r;
 
         for (int i = 0; i < 41; i++)
         {
@@ -213,7 +243,7 @@ public class Build3DSheet : MonoBehaviour
         inside = inside.Pow(ePow);
 
         inside = inside.Divide(tAlpha);
-        var H1 = Elementwise.Multiply(H0, inside);
+        double[,] H1 = Elementwise.Multiply(H0, inside);
         return H1;
     }
 
@@ -362,7 +392,7 @@ public class Build3DSheet : MonoBehaviour
         double dt;
         float t = 0.0f;
         //int count = 0;
-        var T = T0;
+        double[,] T = T0;
 
         double maxDup = 0;
         double maxDdn = 0;
@@ -427,18 +457,18 @@ public class Build3DSheet : MonoBehaviour
         }
         else
         {   
-            var dt0 = dt0Mulitplier * (Mathf.Pow(dx, 2) / maxD);
+            double  dt0 = dt0Mulitplier * (Mathf.Pow(dx, 2) / maxD);
             dt = Math.Min(dt0, tf - t);
         }
 
-        var mu_x = dt / (dx * dx);
-        var mu_y = dt / (dy * dy);
-        var Tb = T.Add(b);
+        double mu_x = dt / (dx * dx);
+        double mu_y = dt / (dy * dy);
+        double [,]Tb = T.Add(b);
 
-        var d1 = Elementwise.Multiply(mu_y, Dup);
-        var d2 = Elementwise.Multiply(mu_y, Ddown);
-        var d3 = Elementwise.Multiply(mu_x, Dright);
-        var d4 = Elementwise.Multiply(mu_x, Dleft);
+        double[,] d1 = Elementwise.Multiply(mu_y, Dup);
+        double[,] d2 = Elementwise.Multiply(mu_y, Ddown);
+        double[,] d3 = Elementwise.Multiply(mu_x, Dright);
+        double[,] d4 = Elementwise.Multiply(mu_x, Dleft);
 
         for (int i = 1; i < J; i++)
         {
