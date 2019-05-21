@@ -11,4 +11,4 @@ The model is interactive, the user can change the mass balance over part of the 
 To test it out, visit the WebGL version of the application here: https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html
 
 
-<a href="https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html">Go to here</a>
+<a href="{{https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html}}">{{Go to here}}</a>
