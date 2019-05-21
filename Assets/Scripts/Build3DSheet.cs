@@ -85,6 +85,8 @@ public class Build3DSheet : MonoBehaviour
 
     public void InitiateModel()
     {
+        timeDisplay.text = "Time Scale";
+
         //Generate a matrix of points
         float dx = 2 * L / J;
         float[] x_temp = new float[(int)(2 * L / dx) + 1];
@@ -113,6 +115,8 @@ public class Build3DSheet : MonoBehaviour
 
     public void InitiateAntarctica()
     {
+        timeDisplay.text = "Time Scale";
+
         double[,] H1 = new double[41, 41];
         string[] lineData = AntarcticSurface.text.Split("\n"[0]);
         for (int i = 0; i < lineData.Length; i++)
