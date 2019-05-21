@@ -12,7 +12,7 @@ The model is interactive, the user can change the mass balance over part of the 
 
 
 Current build environment
-| Program       | Verzion       |
-| ------------- |---------------|
-| Unity         | 2017.4.2f2    |
-| Visual Studio 17 | 15.8.9     |
+| Program          | Version       |
+| ---------------- | ------------- |
+| Unity            | 2017.4.2f2    |
+| Visual Studio 17 | 15.8.9        |
