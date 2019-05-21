@@ -9,3 +9,10 @@ The SIA is computationally efficient, so lends itself well to real time animatio
 The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position and the UI slider.
 
 [To test it out, visit the WebGL version of the application here](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
+
+
+Current build environment
+| Program       | Verzion       |
+| ------------- |---------------|
+| Unity         | 2017.4.2f2    |
+| Visual Studio 17 | 15.8.9     |
