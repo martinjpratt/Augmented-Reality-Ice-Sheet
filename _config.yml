@@ -9,3 +9,6 @@ Initially this application will be build using WebGL to provide better collabora
 The SIA is computationally efficient, so lends itself well to real time animation. Some extra information about the SIA and other ice sheet modeling techniques can be found here: http://www.antarcticglaciers.org/glaciers-and-climate/numerical-ice-sheet-models/hierarchy-ice-sheet-models-introduction/
 The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position anf the UI slider.
 To test it out, visit the WebGL version of the application here: https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html
+
+
+<a href="https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html">Go to here</a>
