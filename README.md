@@ -4,6 +4,8 @@ This is the source code for the development of an AR Ice Sheet; a Unity project 
 
 Initially this application will be build using WebGL to provide better collaboration and development during . Subsequently we will switch development to Microsoft's HoloLens HMD, and also (hopefully) mobile AR. The objective being to show a simple example of how mass balance can affect an ice sheet as well as understand the time scales involved. For the HoloLens app, we are intending to use real world objects to change the bed "topography" and affect ice sheet flow.
 
+![alt text](https://upload.wikimedia.org/wikipedia/commons/0/02/Ramahololens.jpg "Microsoft Hololens")
+
 The SIA is computationally efficient, so lends itself well to real time animation. [Some extra information about the SIA and other ice sheet modeling techniques can be found here](http://www.antarcticglaciers.org/glaciers-and-climate/numerical-ice-sheet-models/hierarchy-ice-sheet-models-introduction/)
 
 The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position and the UI slider.
