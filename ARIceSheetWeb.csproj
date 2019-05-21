@@ -342,6 +342,7 @@
     <Compile Include="Assets\Scripts\BuildBed.cs" />
     <Compile Include="Assets\Scripts\BuildSheet.cs" />
     <Compile Include="Assets\Scripts\MeshDeformer.cs" />
+    <Compile Include="Assets\Scripts\MouseEditorMover.cs" />
     <Compile Include="Assets\Scripts\MouseIceSheetCollision.cs" />
     <Compile Include="Assets\Scripts\MouseInputMover.cs" />
     <Compile Include="Assets\Scripts\MoveCloudSun.cs" />

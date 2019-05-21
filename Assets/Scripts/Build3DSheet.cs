@@ -4,6 +4,7 @@ using UnityEngine;
 using System.Linq;
 using System;
 using Accord.Math;
+using UnityEngine.UI;
 
 public class Build3DSheet : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class Build3DSheet : MonoBehaviour
     public bool runModel = false;
     public float gammaDenumerator = 5;
     public float dt0Mulitplier = 0.25f;
+    public Text timeDisplay;
 
     double[,] Hinit;
     double[,] a;
@@ -379,6 +381,8 @@ public class Build3DSheet : MonoBehaviour
         H = diffusion2(Lx, Ly, J, K, Dup, Ddn, Drt, Dlt, H, deltat, Mnew, b);
 
         modelt = modelt + deltat;
+
+        timeDisplay.text = (modelt / secpera).ToString("F0") + " years";
         Mnew = new double[41, 41];
     }
 
