@@ -9,6 +9,7 @@ using UnityEngine.UI;
 public class Build3DSheet : MonoBehaviour
 {
     public TextAsset AntarcticSurface;
+    public Build3DBed bedSurface;
     public float J = 40;
     public float dtyears = 20.0f;
     public float L = 1200e3f;
@@ -20,6 +21,7 @@ public class Build3DSheet : MonoBehaviour
     public float gammaDenumerator = 5;
     public float dt0Mulitplier = 0.25f;
     public Text timeDisplay;
+    public GameObject modelUIobject;
 
     double[,] Hinit;
     double[,] a;
@@ -45,6 +47,7 @@ public class Build3DSheet : MonoBehaviour
     float rhow = 1028.0f;
     int xSize = 40;
     int zSize = 40;
+    double[,] newBed;
 
     private UnityEngine.Vector3[] vertices;
     private Vector2[] uv;
@@ -80,13 +83,13 @@ public class Build3DSheet : MonoBehaviour
         vertexBuffer = new List<UnityEngine.Vector3>((xSize + 1) * (zSize + 1));
         triangles = new int[xSize * zSize * 6];
 
-        InitiateModel();
+        //InitiateModel();
     }
 
     public void InitiateModel()
     {
         timeDisplay.text = "Time Scale";
-
+        newBed = bedSurface.bed;
         //Generate a matrix of points
         float dx = 2 * L / J;
         float[] x_temp = new float[(int)(2 * L / dx) + 1];
@@ -111,12 +114,15 @@ public class Build3DSheet : MonoBehaviour
         Hinit = Elementwise.Multiply(H1, 0.5f);
         a = Matrix.Zeros(41, 41);
         H = null;
+        
+        modelt = 0;
+        modelUIobject.SetActive(true);
     }
 
     public void InitiateAntarctica()
     {
         timeDisplay.text = "Time Scale";
-
+        newBed = bedSurface.bed;
         double[,] H1 = new double[41, 41];
         string[] lineData = AntarcticSurface.text.Split("\n"[0]);
         for (int i = 0; i < lineData.Length; i++)
@@ -139,6 +145,9 @@ public class Build3DSheet : MonoBehaviour
         Hinit = Elementwise.Multiply(H1, 0.5f);
         a = Matrix.Zeros(41, 41);
         H = null;
+        
+        modelt = 0;
+        modelUIobject.SetActive(true);
     }
 
 
@@ -270,7 +279,7 @@ public class Build3DSheet : MonoBehaviour
         double[,] H0 = Hinit;
         float deltat = dtyears * secpera;
         float tf = 10e4f * secpera;
-        double[,] b = a;
+        
         double[,] M0 = a;
         float A = 1e-15f / secpera;
 
@@ -382,7 +391,7 @@ public class Build3DSheet : MonoBehaviour
         double[,] Dlt = Elementwise.Multiply(Gamma, tempDlt);
 
         //Now run the diffusion to produce the next set of grid points
-        H = diffusion2(Lx, Ly, J, K, Dup, Ddn, Drt, Dlt, H, deltat, Mnew, b);
+        H = diffusion2(Lx, Ly, J, K, Dup, Ddn, Drt, Dlt, H, deltat, Mnew, newBed);
 
         modelt = modelt + deltat;
 
