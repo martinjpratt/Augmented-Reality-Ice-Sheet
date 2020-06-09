@@ -5,7 +5,7 @@ using Accord.Math;
 
 public class Build3DBed : MonoBehaviour {
 
-
+    public TextAsset AntarcticBed;
     public double[,] modifiedBed;
     public double[,] bed;
     public float J = 40;
@@ -48,6 +48,33 @@ public class Build3DBed : MonoBehaviour {
         initTriangles();
         Generate(bed);
     }
+
+    public void InitiateAntacticBed()
+    {
+        //Generate a matrix of points
+        float dx = 2 * L / J;
+        float[] x_temp = new float[(int)(2 * L / dx) + 1];
+        float[] y_temp = new float[(int)(2 * L / dx) + 1];
+        mesh = new Mesh();
+        mesh.name = "Bed Mesh";
+
+        modifiedBed = new double[41, 41];
+
+        string[] lineData = AntarcticBed.text.Split("\n"[0]);
+        for (int i = 0; i < lineData.Length; i++)
+        {
+            string[] elementData = lineData[i].Split(","[0]);
+            for (int j = 0; j < elementData.Length; j++)
+            {
+                modifiedBed[i, j] = double.Parse(elementData[j]);
+            }
+        }
+
+        initTriangles();
+        Generate(modifiedBed);
+    }
+
+
 
     private void initTriangles()
     {
