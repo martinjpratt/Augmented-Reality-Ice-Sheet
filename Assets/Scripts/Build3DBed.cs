@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Accord.Math;
+using UnityEngine.UI;
 
 public class Build3DBed : MonoBehaviour {
 
@@ -12,6 +13,7 @@ public class Build3DBed : MonoBehaviour {
     public float J = 40;
     public float L = 1200e3f;
     public bool buildBed = false;
+    public Toggle cameraMotionToggle;
 
 
     List<UnityEngine.Vector3> vertexBuffer;
@@ -234,7 +236,11 @@ public class Build3DBed : MonoBehaviour {
         }
         else
         {
-            camera.GetComponent<MouseEditorMover>().motionActive = true;
+            if (cameraMotionToggle.isOn)
+            {
+                camera.GetComponent<MouseEditorMover>().motionActive = true;
+            }
+            
         }
 	}
 }
