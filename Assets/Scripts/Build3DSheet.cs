@@ -27,7 +27,9 @@ public class Build3DSheet : MonoBehaviour
     public GameObject modelUIobject;
     public Color minColor;
     public Color maxColor;
-
+    public Sprite pauseSprite;
+    public Sprite playSprite;
+    public Image playButton;
 
     //Private variables, mostly to allocate memory
     double[,] Hinit;
@@ -75,7 +77,18 @@ public class Build3DSheet : MonoBehaviour
     //UI Section
     public void selectRunModel()
     {
-        runModel = true;
+        if (!runModel)
+        {
+            runModel = true;
+            playButton.sprite = pauseSprite;
+        }
+        else
+        {
+            runModel = false;
+            Resources.UnloadUnusedAssets();
+            playButton.sprite = playSprite;
+        }
+        
     }
 
     public void deselectRunModel()
@@ -97,6 +110,7 @@ public class Build3DSheet : MonoBehaviour
         surfaceTexture = new Texture2D(41, 41);
         colorArray = new Color[1681];
         this.GetComponent<Renderer>().material.mainTexture = surfaceTexture;
+        GetComponent<Renderer>().material.renderQueue = 2000;
         //InitiateModel();
     }
 
@@ -176,6 +190,32 @@ public class Build3DSheet : MonoBehaviour
     }
 
 
+    public void InitiateFlat()
+    {
+        //bedSurface.InitiateAntacticBed();
+
+        timeDisplay.text = "Time Scale";
+        newBed = bedSurface.bed;
+        double[,] H1 = new double[41, 41];
+        
+        mesh = new Mesh();
+        mesh.name = "Antarctica Ice Sheet Surface";
+
+        initTriangles();
+        initUVs();
+
+        //Build the intial condition
+        Generate(H1);
+
+        Hinit = Elementwise.Multiply(H1, 0);
+        a = Matrix.Zeros(41, 41);
+        H = null;
+
+        modelt = 0;
+        modelUIobject.SetActive(true);
+    }
+
+
     private void initTriangles()
     {
         for (int ti = 0, vi = 0, y = 0; y < zSize; y++, vi++)
@@ -214,9 +254,9 @@ public class Build3DSheet : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
-                if (h[x, y] < 0)
+                if (h[x, y] < newBed[x,y])
                 {
-                    h[x, y] = 0;
+                    h[x, y] = newBed[x, y];
 
                 }
                 colorArray[i] = Color.Lerp(minColor, maxColor, (float)h[x, y] / maxH);
@@ -454,6 +494,9 @@ public class Build3DSheet : MonoBehaviour
         //Now run the diffusion to produce the next set of grid points
         H = diffusion2(Lx, Ly, J, K, Dup, Ddn, Drt, Dlt, H, deltat, Mnew, newBed);   //Line 84 in siageneral.m
 
+
+        Generate(H.Add(newBed));
+        
         //TODO add calving for edge improvements??
 
         //There's a bunch of code in siageneral.m that deals with the plotting, I've ignored as we're doing a whole different visualization.
@@ -580,7 +623,7 @@ public class Build3DSheet : MonoBehaviour
 
 
 
-        Generate(T);
+        //Generate(T.Add(b));
 
         return T;
         //}

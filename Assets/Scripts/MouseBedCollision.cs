@@ -39,50 +39,52 @@ public class MouseBedCollision : MonoBehaviour {
         initiateUIobject.SetActive(true);
 
     }
-	
-	// Update is called once per frame
-	void Update () {
+
+    public float radius = 4;
+    double[,] modifiedVertices;
+    Mesh mesh;
+    // Update is called once per frame
+    void Update () {
         if (Input.GetMouseButton(0) && modificationMode)
         {
-            this.GetComponent<Build3DBed>().buildBed = true;
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
             {
+                this.GetComponent<Build3DBed>().buildBed = true;
                 Vector3 point = hit.point;
-                Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
+                mesh = hit.transform.GetComponent<MeshFilter>().mesh;
 
-                float minDistanceSqr = Mathf.Infinity;
-                nearestVertex = Vector3.zero;
+                modifiedVertices = new double[41, 41];
 
                 int counter = 0;
-
-                foreach (Vector3 vertex in mesh.vertices)
+                
+                foreach(Vector3 vertex in mesh.vertices)
                 {
                     Vector3 diff = point - hit.transform.TransformPoint(vertex);
                     float distSqr = diff.sqrMagnitude;
-                    if (distSqr < minDistanceSqr)
+                    if (distSqr < radius)
                     {
-                        minDistanceSqr = distSqr;
-                        nearestVertex = vertex;
-                        nearestVertexIndex = counter;
+                        modifiedVertices[counter % 41, (int)Mathf.Floor((float)counter / 41f)] = accumualtionIncrement * GaussFalloff(distSqr, radius);
                     }
                     counter++;
                 }
-                this.GetComponent<Build3DBed>().modifiedBed[nearestVertexIndex % 41, (int)Mathf.Floor((float)nearestVertexIndex / 41f)] = accumualtionIncrement;
+
+                this.GetComponent<Build3DBed>().modifiedBed = modifiedVertices;
 
             }
 
         } else if (Input.GetMouseButton(1) && modificationMode)
         {
-            this.GetComponent<Build3DBed>().buildBed = true;
+            
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
             {
-                Vector3 point = hit.point;
-                Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
 
-                float minDistanceSqr = Mathf.Infinity;
-                nearestVertex = Vector3.zero;
+                this.GetComponent<Build3DBed>().buildBed = true;
+                Vector3 point = hit.point;
+                mesh = hit.transform.GetComponent<MeshFilter>().mesh;
+
+                modifiedVertices = new double[41, 41];
 
                 int counter = 0;
 
@@ -90,17 +92,14 @@ public class MouseBedCollision : MonoBehaviour {
                 {
                     Vector3 diff = point - hit.transform.TransformPoint(vertex);
                     float distSqr = diff.sqrMagnitude;
-                    if (distSqr < minDistanceSqr)
+                    if (distSqr < radius)
                     {
-                        minDistanceSqr = distSqr;
-                        nearestVertex = vertex;
-                        nearestVertexIndex = counter;
+                        modifiedVertices[counter % 41, (int)Mathf.Floor((float)counter / 41f)] = -accumualtionIncrement * GaussFalloff(distSqr, radius);
                     }
                     counter++;
                 }
 
-                this.GetComponent<Build3DBed>().modifiedBed[nearestVertexIndex % 41, (int)Mathf.Floor((float)nearestVertexIndex / 41f)] = -accumualtionIncrement;
-
+                this.GetComponent<Build3DBed>().modifiedBed = modifiedVertices;
             }
 
         } else
@@ -108,5 +107,9 @@ public class MouseBedCollision : MonoBehaviour {
             this.GetComponent<Build3DBed>().buildBed = false;
         }
         
+    }
+
+    float GaussFalloff(float distance, float inRadius) {
+        return Mathf.Clamp01(Mathf.Pow(360.0f, -Mathf.Pow(distance / inRadius, 2.5f) - 0.01f));
     }
 }

@@ -26,14 +26,14 @@ public class MoveCloudSun : MonoBehaviour {
                 IsSun = false;
                 SunObject.SetActive(false);
                 CloudObject.SetActive(true);
-                CloudObject.transform.position = new Vector3(hitPosition.x, CloudObject.transform.position.y, hitPosition.z);
+                CloudObject.transform.position = new Vector3(hitPosition.x, hitPosition.y + 5.5f, hitPosition.z);
             }
             else
             {
                 IsSun = true;
                 SunObject.SetActive(true);
                 CloudObject.SetActive(false);
-                SunObject.transform.position = new Vector3(hitPosition.x, CloudObject.transform.position.y, hitPosition.z);
+                SunObject.transform.position = new Vector3(hitPosition.x, hitPosition.y + 5.5f, hitPosition.z);
             }
         }
         else

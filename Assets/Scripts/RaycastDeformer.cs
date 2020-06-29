@@ -65,7 +65,7 @@ public class RaycastDeformer : MonoBehaviour
         bedMesh.RecalculateNormals();
         //isDeforming = true;
     }
-    public void AddPerlinNoise()
+    public void AddPerlinNoiseMountain()
     {
         bedMesh = this.GetComponent<MeshFilter>().mesh;
         newVertices = new Vector3[bedMesh.vertices.Length];
@@ -73,8 +73,8 @@ public class RaycastDeformer : MonoBehaviour
         {
             for (int x = 0; x <= 40; x++)
             {
-                float y = Mathf.PerlinNoise((float)x * .3f, (float)z * .3f);
-                y = (y - 0.5f) * 4000f;
+                float y = Mathf.PerlinNoise((float)x * .15f, (float)z * .15f);
+                y = (y - 0.5f) * 8000f + (z*250);
                 if (y < 0)
                 {
                     y = 0;
@@ -88,6 +88,35 @@ public class RaycastDeformer : MonoBehaviour
         bedMesh.RecalculateBounds();
         bedMesh.RecalculateNormals();
         this.GetComponent<Build3DBed>().bed = perlinSurface;
+        this.GetComponent<Build3DBed>().GenerateSides(perlinSurface);
+        this.GetComponent<MeshCollider>().sharedMesh = bedMesh;
+    }
+
+
+    public void AddPerlinNoise()
+    {
+        bedMesh = this.GetComponent<MeshFilter>().mesh;
+        newVertices = new Vector3[bedMesh.vertices.Length];
+        for (int i = 0, z = 0; z <= 40; z++)
+        {
+            for (int x = 0; x <= 40; x++)
+            {
+                float y = Mathf.PerlinNoise((float)x * .15f, (float)z * .15f);
+                y = (y - 0.5f) * 8000f;
+                if (y < 0)
+                {
+                    y = 0;
+                }
+                newVertices[i] = new Vector3(bedMesh.vertices[i].x, y, bedMesh.vertices[i].z);
+                perlinSurface[x, z] = y;
+                i++;
+            }
+        }
+        bedMesh.vertices = newVertices;
+        bedMesh.RecalculateBounds();
+        bedMesh.RecalculateNormals();
+        this.GetComponent<Build3DBed>().bed = perlinSurface;
+        this.GetComponent<Build3DBed>().GenerateSides(perlinSurface);
         this.GetComponent<MeshCollider>().sharedMesh = bedMesh;
     }
 }
