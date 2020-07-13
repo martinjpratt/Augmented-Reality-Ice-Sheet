@@ -1,6 +1,7 @@
 ---
 layout: page
-title: HoloLens
+title: "HoloLens"
+permalink: /URL-PATH/
 ---
 
 This is the page that will go through the HoloLens version
