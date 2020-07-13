@@ -7,6 +7,8 @@ There are 3 branches to this repo:
 2. MobileAR: contains a version that can be built and deployed via Unity onto a mobile AR device using Apple's ARKit or Android's ARCore.
 3. HoloLens: contains the HoloLens version that can be built and deployed via Unity.
 
+Scroll below for platform specific details.
+
 Both MobileAR and HoloLens versions make use of Microsoft's [Mixed Reality Toolkit](https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/GettingStartedWithTheMRTK.html). This allows for multi-platform development from a single code base. Although the current HoloLens build is developed for the HoloLens 1, the code can also be used without too much modification to be used on the HoloLens 2 if necessary.
 
 ![alt text](https://svs.gsfc.nasa.gov/vis/a030000/a030800/a030880/grace_antarctica_black_w_vel_v3_201608_print.jpg "Antarctic Mass Balance")
