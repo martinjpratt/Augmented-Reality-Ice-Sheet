@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using Microsoft.MixedReality.Toolkit.UI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
@@ -6,16 +7,20 @@ using UnityEngine.UI;
 public class MouseIceSheetCollision : MonoBehaviour
 {
 
-    public GameObject dot;
     public int nearestVertexIndex;
-    public float accumualtionIncrement;
+    public float accumualtionIncrement = 4e-06f;
+#if UNITY_WSA
+    public PinchSlider UISlider;
+#elif UNITY_IOS || UNITY_ANDROID
     public Slider UISlider;
+#endif
     float baseAccumulationIncrement;
     RaycastHit hit;
     Ray ray;
     Vector3 nearestVertex;
     float distSqr;
     Vector3 diff;
+    public GameObject CloudSun;
 
     // Use this for initialization
     void Start()
@@ -27,22 +32,23 @@ public class MouseIceSheetCollision : MonoBehaviour
 
     public void sliderChangeMB()
     {
-        accumualtionIncrement = baseAccumulationIncrement * UISlider.value;
+        accumualtionIncrement = baseAccumulationIncrement * ((UISlider.value * 2) - 1);
+        
     }
 
     // Update is called once per frame
     void Update()
     {
-        
-
         if (this.GetComponent<Build3DSheet>().runModel)
-        {   
-            ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray, out hit))
+        {
+            int layerMask = 1 << 4;
+            RaycastHit hit;
+            if (Physics.Raycast(CloudSun.transform.position, transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity, layerMask))
             {
+                
                 Vector3 point = hit.point;
-                this.GetComponent<MoveCloudSun>().hitPosition = hit.point;
-                Mesh mesh = hit.transform.GetComponent<MeshFilter>().mesh;
+                
+                Mesh mesh = this.transform.GetComponent<MeshFilter>().mesh;
 
                 float minDistanceSqr = Mathf.Infinity;
                 nearestVertex = Vector3.zero;
@@ -51,7 +57,7 @@ public class MouseIceSheetCollision : MonoBehaviour
 
                 foreach (Vector3 vertex in mesh.vertices)
                 {
-                    Vector3 diff = point - hit.transform.TransformPoint(vertex);
+                    Vector3 diff = point - this.transform.TransformPoint(vertex);
                     float distSqr = diff.sqrMagnitude;
                     if (distSqr < minDistanceSqr)
                     {
@@ -97,8 +103,8 @@ public class MouseIceSheetCollision : MonoBehaviour
                 {
                     this.GetComponent<Build3DSheet>().Mnew[xVal - 1, yVal + 1] = accumualtionIncrement;
                 }
-                
-                
+
+
             }
 
         }

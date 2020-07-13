@@ -5,6 +5,7 @@ using System.Linq;
 using System;
 using Accord.Math;
 using UnityEngine.UI;
+using TMPro;
 
 public class Build3DSheet : MonoBehaviour
 {
@@ -23,13 +24,12 @@ public class Build3DSheet : MonoBehaviour
     public bool runModel = false;
     public float gammaDenumerator = 5;
     public float dt0Mulitplier = 0.25f;
-    public Text timeDisplay;
+    public TextMeshProUGUI timeDisplay;
     public GameObject modelUIobject;
     public Color minColor;
     public Color maxColor;
-    public Sprite pauseSprite;
-    public Sprite playSprite;
-    public Image playButton;
+    public UIMassBalanceManager uiMassBalanceManger;
+
 
     //Private variables, mostly to allocate memory
     double[,] Hinit;
@@ -80,21 +80,23 @@ public class Build3DSheet : MonoBehaviour
         if (!runModel)
         {
             runModel = true;
-            playButton.sprite = pauseSprite;
+            uiMassBalanceManger.HideSurfaceControls();
+            uiMassBalanceManger.playImage.sprite = uiMassBalanceManger.pauseSprite;
         }
         else
         {
             runModel = false;
             Resources.UnloadUnusedAssets();
-            playButton.sprite = playSprite;
+            uiMassBalanceManger.ShowSurfaceControls();
+            uiMassBalanceManger.playImage.sprite = uiMassBalanceManger.playSprite;
         }
-        
     }
 
     public void deselectRunModel()
     {
         runModel = false;
         Resources.UnloadUnusedAssets();
+        uiMassBalanceManger.ShowSurfaceControls();
     }
 
 
@@ -147,7 +149,7 @@ public class Build3DSheet : MonoBehaviour
         H = null;
 
         modelt = 0;
-        modelUIobject.SetActive(true);
+        uiMassBalanceManger.ShowModelControls();
     }
 
 
@@ -186,7 +188,7 @@ public class Build3DSheet : MonoBehaviour
         H = null;
 
         modelt = 0;
-        modelUIobject.SetActive(true);
+        uiMassBalanceManger.ShowModelControls();
     }
 
 
@@ -197,7 +199,7 @@ public class Build3DSheet : MonoBehaviour
         timeDisplay.text = "Time Scale";
         newBed = bedSurface.bed;
         double[,] H1 = new double[41, 41];
-        
+
         mesh = new Mesh();
         mesh.name = "Antarctica Ice Sheet Surface";
 
@@ -212,7 +214,7 @@ public class Build3DSheet : MonoBehaviour
         H = null;
 
         modelt = 0;
-        modelUIobject.SetActive(true);
+        uiMassBalanceManger.ShowModelControls();
     }
 
 
@@ -254,7 +256,7 @@ public class Build3DSheet : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
-                if (h[x, y] < newBed[x,y])
+                if (h[x, y] < newBed[x, y])
                 {
                     h[x, y] = newBed[x, y];
 
@@ -496,7 +498,7 @@ public class Build3DSheet : MonoBehaviour
 
 
         Generate(H.Add(newBed));
-        
+
         //TODO add calving for edge improvements??
 
         //There's a bunch of code in siageneral.m that deals with the plotting, I've ignored as we're doing a whole different visualization.

@@ -74,7 +74,7 @@ public class RaycastDeformer : MonoBehaviour
             for (int x = 0; x <= 40; x++)
             {
                 float y = Mathf.PerlinNoise((float)x * .15f, (float)z * .15f);
-                y = (y - 0.5f) * 8000f + (z*250);
+                y = (y - 0.5f) * 8000f + (z * 250);
                 if (y < 0)
                 {
                     y = 0;

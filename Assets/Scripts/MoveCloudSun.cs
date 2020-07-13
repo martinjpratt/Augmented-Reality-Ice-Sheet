@@ -1,11 +1,16 @@
-﻿using System.Collections;
+﻿using Microsoft.MixedReality.Toolkit.UI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class MoveCloudSun : MonoBehaviour {
 
+#if UNITY_WSA
+    public PinchSlider UISlider;
+#elif UNITY_IOS || UNITY_ANDROID
     public Slider UISlider;
+#endif
     public bool IsSun = false;
     public GameObject SunObject;
     public GameObject CloudObject;
@@ -21,19 +26,19 @@ public class MoveCloudSun : MonoBehaviour {
 
         if (this.GetComponent<Build3DSheet>().runModel)
         {
-            if (UISlider.value > 0)
+            if (UISlider.value >= 0.5f)
             {
                 IsSun = false;
                 SunObject.SetActive(false);
                 CloudObject.SetActive(true);
-                CloudObject.transform.position = new Vector3(hitPosition.x, hitPosition.y + 5.5f, hitPosition.z);
+                //CloudObject.transform.position = new Vector3(hitPosition.x, CloudObject.transform.position.y, hitPosition.z);
             }
             else
             {
                 IsSun = true;
                 SunObject.SetActive(true);
                 CloudObject.SetActive(false);
-                SunObject.transform.position = new Vector3(hitPosition.x, hitPosition.y + 5.5f, hitPosition.z);
+                //SunObject.transform.position = new Vector3(hitPosition.x, CloudObject.transform.position.y, hitPosition.z);
             }
         }
         else

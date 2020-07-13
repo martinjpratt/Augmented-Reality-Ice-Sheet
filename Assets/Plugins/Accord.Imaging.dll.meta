@@ -1,14 +1,15 @@
 fileFormatVersion: 2
-guid: bd5b16fd79e333e4c88064c163d55852
-timeCreated: 1542297817
-licenseType: Free
+guid: ddc9d2ce336304a659dc9c085a8b50ec
 PluginImporter:
   externalObjects: {}
   serializedVersion: 2
   iconMap: {}
   executionOrder: {}
+  defineConstraints: []
   isPreloaded: 0
   isOverridable: 0
+  isExplicitlyReferenced: 0
+  validateReferences: 1
   platformData:
   - first:
       Any: 

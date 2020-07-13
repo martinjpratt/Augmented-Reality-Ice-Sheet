@@ -1,11 +1,12 @@
-﻿using System.Collections;
+﻿using Microsoft.MixedReality.Toolkit.UI;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 
 public class ParticleEmitterController : MonoBehaviour {
 
-    public Slider UISlider;
+    public PinchSlider UISlider;
     ParticleSystem ps;
 
 	// Use this for initialization
@@ -15,10 +16,10 @@ public class ParticleEmitterController : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-        if (UISlider.value > 0)
+        if (UISlider.SliderValue > 0.5f)
         {
             var emission = ps.emission;
-            emission.rateOverTime = Mathf.Pow(10, UISlider.value * 2);
+            emission.rateOverTime = Mathf.Pow(10, UISlider.SliderValue * 2);
         }
 	}
 }

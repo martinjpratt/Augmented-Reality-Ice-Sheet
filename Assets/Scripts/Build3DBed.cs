@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Accord.Math;
-using UnityEngine.UI;
 
-public class Build3DBed : MonoBehaviour {
+public class Build3DBed : MonoBehaviour
+{
 
     public TextAsset AntarcticBed;
     public double[,] modifiedBed;
@@ -13,7 +13,6 @@ public class Build3DBed : MonoBehaviour {
     public float J = 40;
     public float L = 1200e3f;
     public bool buildBed = false;
-    public Toggle cameraMotionToggle;
 
 
     List<UnityEngine.Vector3> vertexBuffer;
@@ -40,7 +39,7 @@ public class Build3DBed : MonoBehaviour {
         sideVertexBuffer = new List<UnityEngine.Vector3>(41 * 4 * 2);
         triangles = new int[xSize * zSize * 6];
         sideTriangles = new int[40 * 4 * 1 * 6];
-        uv = new Vector2[41*41];
+        uv = new Vector2[41 * 41];
 
 
         GetComponent<Renderer>().material.renderQueue = 2001;
@@ -112,7 +111,7 @@ public class Build3DBed : MonoBehaviour {
                 triangles[ti + 5] = vi + xSize + 2;
             }
         }
-        
+
     }
 
     private void initSideTriangles()
@@ -138,7 +137,7 @@ public class Build3DBed : MonoBehaviour {
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
-                vertexBuffer.Add(new UnityEngine.Vector3(x, (float)b[x,y], y));
+                vertexBuffer.Add(new UnityEngine.Vector3(x, (float)b[x, y], y));
                 uv[i] = new Vector2((float)x / 10, (float)y / 10);
             }
         }
@@ -156,7 +155,7 @@ public class Build3DBed : MonoBehaviour {
     }
 
 
-    
+
 
     public void GenerateSides(double[,] b)
     {
@@ -214,11 +213,11 @@ public class Build3DBed : MonoBehaviour {
         sideMeshFilter.sharedMesh = smesh;
     }
 
-	// Update is called once per frame
-	void Update () {
+
+    // Update is called once per frame
+    void Update () {
         if (buildBed)
         {
-            camera.GetComponent<MouseEditorMover>().motionActive = false;
             bed = bed.Add(modifiedBed);
             for (int i = 0, y = 0; y <= zSize; y++)
             {
@@ -232,15 +231,7 @@ public class Build3DBed : MonoBehaviour {
             }
             Generate(bed);
             GenerateSides(bed);
-            //modifiedBed = new double[41, 41];
-        }
-        else
-        {
-            if (cameraMotionToggle.isOn)
-            {
-                camera.GetComponent<MouseEditorMover>().motionActive = true;
-            }
-            
+            modifiedBed = new double[41, 41];
         }
 	}
 }

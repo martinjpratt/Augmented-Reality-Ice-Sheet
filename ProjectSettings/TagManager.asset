@@ -4,6 +4,10 @@
 TagManager:
   serializedVersion: 2
   tags:
+  - GIBSEarth
+  - TilePlane
+  - PolarTilePlane
+  - ARDefaultPlane
   - label
   layers:
   - Default
@@ -37,7 +41,7 @@ TagManager:
   - 
   - 
   - 
-  - 
+  - Spatial Awareness
   m_SortingLayers:
   - name: Default
     uniqueID: 0

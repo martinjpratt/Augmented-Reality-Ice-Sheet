@@ -10,33 +10,42 @@ public class MouseBedCollision : MonoBehaviour {
     Vector3 nearestVertex;
     public int nearestVertexIndex;
     public float accumualtionIncrement;
-    bool modificationMode;
+    public bool modificationMode;
     public Text bedStateText;
     public GameObject initiateUIobject;
     public GameObject modelUIobject;
     public GameObject IceSurfaceObject;
+    public Slider topoSlider;
+    public Button setBedButton;
 
     // Use this for initialization
     void Start () {
         modificationMode = true;
     }
 
+
+    public void modificationSwitch(bool onOffSwitch)
+    {
+        modificationMode = !onOffSwitch;
+        setBedButton.interactable = !onOffSwitch;
+    }
+
     public void allowModification()
     {
-        modificationMode = true;
-        bedStateText.text = "Modifiable";
-        initiateUIobject.SetActive(false);
+        //bedStateText.text = "Modifiable";
+        //initiateUIobject.SetActive(false);
         Destroy(IceSurfaceObject.GetComponent<MeshFilter>().mesh);
         Destroy(IceSurfaceObject.GetComponent<MeshCollider>().sharedMesh);
-        modelUIobject.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.Invoke();
-        modelUIobject.SetActive(false);
+        modificationMode = true;
+        //modelUIobject.transform.GetChild(1).gameObject.GetComponent<Button>().onClick.Invoke();
+        //modelUIobject.SetActive(false);
     }
 
     public void disallowModification()
     {
         modificationMode = false;
-        bedStateText.text = "Locked";
-        initiateUIobject.SetActive(true);
+        //bedStateText.text = "Locked";
+        //initiateUIobject.SetActive(true);
 
     }
 
@@ -45,7 +54,7 @@ public class MouseBedCollision : MonoBehaviour {
     Mesh mesh;
     // Update is called once per frame
     void Update () {
-        if (Input.GetMouseButton(0) && modificationMode)
+        if (Input.GetMouseButton(0) && modificationMode && topoSlider.value == 1)
         {
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
             if (Physics.Raycast(ray, out hit))
@@ -73,7 +82,7 @@ public class MouseBedCollision : MonoBehaviour {
 
             }
 
-        } else if (Input.GetMouseButton(1) && modificationMode)
+        } else if (Input.GetMouseButton(0) && modificationMode && topoSlider.value == 0)
         {
             
             ray = Camera.main.ScreenPointToRay(Input.mousePosition);
