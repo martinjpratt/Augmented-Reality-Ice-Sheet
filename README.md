@@ -42,7 +42,7 @@ The Microsoft HoloLens head mounted display provides the truest personal AR expe
 
 Current build environment
 
-| Program          | Version       |
+| Program          | Development Versions       |
 | ---------------- | ------------- |
 | Unity            | 2017.4.2f2 / 2019.2.0f1 / 2019.3.10f1    |
 | Visual Studio 19 | 15.8.9        |
