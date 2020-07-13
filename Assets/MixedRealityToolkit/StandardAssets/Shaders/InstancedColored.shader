@@ -23,6 +23,10 @@ Shader "Hidden/Instanced-Colored"
 
             CGPROGRAM
 
+#if defined(SHADER_API_D3D11)
+            #pragma target 5.0
+#endif
+
             #pragma vertex vert
             #pragma fragment frag
 

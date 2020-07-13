@@ -10,7 +10,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.CameraSystem
     /// <summary>
     /// Service manager supporting running the camera system, without requiring the MixedRealityToolkit object.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/CameraSystemManager")]
     public class CameraSystemManager : BaseServiceManager
     {
         [SerializeField]
@@ -39,8 +38,9 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.CameraSystem
         private void InitializeManager()
         {
             // The camera system class takes arguments for:
+            // * The registrar
             // * The camera system profile
-            object[] args = { profile };
+            object[] args = { this, profile };
 
             Initialize<IMixedRealityCameraSystem>(CameraSystemType.Type, args: args);
         }

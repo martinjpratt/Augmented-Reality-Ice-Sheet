@@ -10,7 +10,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SpatialAwareness
     /// <summary>
     /// Service manager supporting running the spatial awareness system, without requiring the MixedRealityToolkit object.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/SpatialAwarenessSystemManager")]
     public class SpatialAwarenessSystemManager : BaseServiceManager
     {
         [SerializeField]
@@ -39,7 +38,9 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.SpatialAwareness
         private void InitializeManager()
         {
             // The spatial awareness system class takes arguments for:
-            object[] args = { profile };
+            // * The registrar
+            // * The spatial awareness system profile
+            object[] args = { this, profile };
 
             Initialize<IMixedRealitySpatialAwarenessSystem>(SpatialAwarenessSystemType.Type, args: args);
         }

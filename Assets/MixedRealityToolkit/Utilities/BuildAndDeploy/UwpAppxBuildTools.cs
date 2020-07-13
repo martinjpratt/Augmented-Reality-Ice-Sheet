@@ -97,15 +97,6 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
                 return false;
             }
 
-            // Need to add ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch to MixedRealityToolkit.vcxproj
-            if (buildInfo.BuildPlatform == "arm64")
-            {
-                if (!UpdateVSProj(buildInfo))
-                {
-                    return IsBuilding = false;
-                }
-            }
-
             // Now that NuGet packages have been restored, we can run the actual build process.
             exitCode = await Run(msBuildPath, 
                 $"\"{solutionProjectPath}\" {(buildInfo.Multicore ? "/m /nr:false" : "")} /t:{(buildInfo.RebuildAppx ? "Rebuild" : "Build")} /p:Configuration={buildInfo.Configuration} /p:Platform={buildInfo.BuildPlatform} {(string.IsNullOrEmpty(buildInfo.PlatformToolset) ? string.Empty : $"/p:PlatformToolset={buildInfo.PlatformToolset}")} {GetMSBuildLoggingCommand(buildInfo.LogDirectory, "buildAppx.log")}",
@@ -174,17 +165,6 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
             // have VS2017 or VS2019 installed.
             foreach (VSWhereFindOption findOption in VSWhereFindOptions)
             {
-                string arguments = findOption.arguments;
-                if (string.IsNullOrWhiteSpace(EditorUserBuildSettings.wsaUWPVisualStudioVersion))
-                {
-                    arguments += " -latest";
-                }
-                else
-                {
-                    // Add version number with brackets to find only the specified version
-                    arguments += $" -version [{EditorUserBuildSettings.wsaUWPVisualStudioVersion}]";
-                }
-
                 var result = await new Process().StartProcessAsync(
                 new ProcessStartInfo
                 {
@@ -193,7 +173,7 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
                     UseShellExecute = false,
                     RedirectStandardOutput = true,
                     RedirectStandardError = true,
-                    Arguments = arguments,
+                    Arguments = findOption.arguments,
                     WorkingDirectory = @"C:\Program Files (x86)\Microsoft Visual Studio\Installer"
                 });
 
@@ -207,9 +187,9 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
                         {
                             // if there are multiple visual studio installs,
                             // prefer enterprise, then pro, then community
-                            string bestPath = paths.OrderByDescending(p => p.ToLower().Contains("enterprise"))
-                                .ThenByDescending(p => p.ToLower().Contains("professional"))
-                                .ThenByDescending(p => p.ToLower().Contains("community")).First();
+                            string bestPath = paths.OrderBy(p => p.ToLower().Contains("enterprise"))
+                                .ThenBy(p => p.ToLower().Contains("professional"))
+                                .ThenBy(p => p.ToLower().Contains("community")).First();
 
                             string finalPath = $@"{bestPath}{findOption.pathSuffix}";
                             if (File.Exists(finalPath))
@@ -222,46 +202,6 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
             }
 
             return string.Empty;
-        }
-
-        private static bool UpdateVSProj(IBuildInfo buildInfo)
-        {
-            // For ARM64 builds we need to add ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch
-            // to vcxproj file in order to ensure that the build passes
-
-            string projectName = PlayerSettings.productName;
-            string projectFilePath = $"{Path.GetFullPath(buildInfo.OutputDirectory)}\\{projectName}\\{projectName}.vcxproj";
-
-            if (!File.Exists(projectFilePath))
-            {
-                Debug.LogError($"Cannot find project file: {projectFilePath}");
-                return false;
-            }
-
-            var rootNode = XElement.Load(projectFilePath);
-            var defaultNamespace = rootNode.GetDefaultNamespace();
-            var propertyGroupNode = rootNode.Element(defaultNamespace + "PropertyGroup");
-            
-            if (propertyGroupNode == null)
-            {
-                propertyGroupNode = new XElement(defaultNamespace + "PropertyGroup", new XAttribute("Label", "Globals"));
-                rootNode.Add(propertyGroupNode);
-            }
-
-            var newNode = propertyGroupNode.Element(defaultNamespace + "ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch");
-            if (newNode != null)
-            {
-                // If this setting already exists in the project, ensure it's value is "None"
-                newNode.Value = "None";
-            }
-            else
-            {
-                propertyGroupNode.Add(new XElement(defaultNamespace + "ResolveAssemblyWarnOrErrorOnTargetArchitectureMismatch", "None"));
-            }
-
-            rootNode.Save(projectFilePath);
-
-            return true;
         }
 
         private static bool UpdateAppxManifest(IBuildInfo buildInfo)
@@ -305,7 +245,7 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
             }
 
             // Assume package version always has a '.' between each number.
-            // According to https://msdn.microsoft.com/library/windows/apps/br211441.aspx
+            // According to https://msdn.microsoft.com/en-us/library/windows/apps/br211441.aspx
             // Package versions are always of the form Major.Minor.Build.Revision.
             // Note: Revision number reserved for Windows Store, and a value other than 0 will fail WACK.
             var version = PlayerSettings.WSA.packageVersion;
@@ -346,17 +286,8 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
         /// Updates 'Assembly-CSharp.csproj' file according to the values set in buildInfo.
         /// </summary>
         /// <param name="buildInfo">An IBuildInfo containing a valid OutputDirectory</param>
-        /// <remarks>Only used with the .NET backend in Unity 2018 or older, with Unity C# Projects enabled.</remarks>
         public static void UpdateAssemblyCSharpProject(IBuildInfo buildInfo)
         {
-#if !UNITY_2019_1_OR_NEWER
-            if (!EditorUserBuildSettings.wsaGenerateReferenceProjects ||
-                PlayerSettings.GetScriptingBackend(BuildTargetGroup.WSA) != ScriptingImplementation.WinRTDotNET)
-            {
-                // Assembly-CSharp.csproj is only generated when the above is true
-                return;
-            }
-
             string projectFilePath = GetAssemblyCSharpProjectFilePath(buildInfo);
             if (projectFilePath == null)
             {
@@ -367,13 +298,16 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
             var uwpBuildInfo = buildInfo as UwpBuildInfo;
             Debug.Assert(uwpBuildInfo != null);
 
-            if (uwpBuildInfo.AllowUnsafeCode)
+            if (
+#if !UNITY_2019_1_OR_NEWER
+            EditorUserBuildSettings.wsaGenerateReferenceProjects &&
+#endif
+            uwpBuildInfo.AllowUnsafeCode)
             {
                 AllowUnsafeCode(rootElement);
             }
 
             rootElement.Save(projectFilePath);
-#endif // !UNITY_2019_1_OR_NEWER
         }
 
         /// <summary>
@@ -503,7 +437,7 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
         /// </summary>
         /// <param name="rootNode">An XElement containing the AppX manifest from 
         /// the build output</param>
-        /// <param name="capability">The added capabilities tag as XName</param>
+        /// <param name="capability">The added capabilites tag as XName</param>
         /// <param name="value">Value of the Name-XAttribute of the added capability</param>
         public static void AddCapability(XElement rootNode, XName capability, string value)
         {
@@ -546,7 +480,7 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
         /// </summary>
         /// <remarks>
         /// This is only for research projects and should not be used in production.
-        /// For further information take a look at https://docs.microsoft.com/windows/mixed-reality/research-mode.
+        /// For further information take a look at https://docs.microsoft.com/en-us/windows/mixed-reality/research-mode.
         /// Note that this function is only public to poke a hole for testing - do not
         /// take a dependency on this function.
         /// </remarks>
@@ -584,7 +518,7 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
         /// This is not required by the research mode, but not using unsafe code with
         /// direct memory access results in poor performance. So its kinda recommended
         /// to use unsafe code.
-        /// For further information take a look at https://docs.microsoft.com/windows/mixed-reality/research-mode.
+        /// For further information take a look at https://docs.microsoft.com/en-us/windows/mixed-reality/research-mode.
         /// Note that this function is only public to poke a hole for testing - do not
         /// take a dependency on this function.
         /// </remarks>
@@ -630,16 +564,16 @@ namespace Microsoft.MixedReality.Toolkit.Build.Editor
             public string pathSuffix;
         }
 
-        private static readonly VSWhereFindOption[] VSWhereFindOptions =
+        private static VSWhereFindOption[] VSWhereFindOptions =
         {
             // This find option corresponds to the version of vswhere that ships with VS2019.
             new VSWhereFindOption(
-                @"/C vswhere -all -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe",
+                $@"/C vswhere -all -products * -requires Microsoft.Component.MSBuild -find MSBuild\**\Bin\MSBuild.exe",
                 ""),
-            // This find option corresponds to the version of vswhere that ships with VS2017 - this doesn't have
+            // This find option corresponds to the versin of vswhere that ships with VS2017 - this doesn't have
             // support for the -find command switch.
             new VSWhereFindOption(
-                @"/C vswhere -all -products * -requires Microsoft.Component.MSBuild -property installationPath",
+                $@"/C vswhere -all -products * -requires Microsoft.Component.MSBuild -property installationPath",
                 "\\MSBuild\\15.0\\Bin\\MSBuild.exe"),
         };
     }

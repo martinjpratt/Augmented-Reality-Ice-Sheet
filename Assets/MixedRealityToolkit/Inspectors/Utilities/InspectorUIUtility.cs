@@ -15,23 +15,11 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
     public static class InspectorUIUtility
     {
         //Colors
-        private static readonly Color PersonalThemeColorTint100 = new Color(1f, 1f, 1f);
-        private static readonly Color PersonalThemeColorTint75 = new Color(0.75f, 0.75f, 0.75f);
-        private static readonly Color PersonalThemeColorTint50 = new Color(0.5f, 0.5f, 0.5f);
-        private static readonly Color PersonalThemeColorTint25 = new Color(0.25f, 0.25f, 0.25f);
-        private static readonly Color PersonalThemeColorTint10 = new Color(0.10f, 0.10f, 0.10f);
-
-        private static readonly Color ProfessionalThemeColorTint100 = new Color(0f, 0f, 0f);
-        private static readonly Color ProfessionalThemeColorTint75 = new Color(0.25f, 0.25f, 0.25f);
-        private static readonly Color ProfessionalThemeColorTint50 = new Color(0.5f, 0.5f, 0.5f);
-        private static readonly Color ProfessionalThemeColorTint25 = new Color(0.75f, 0.75f, 0.75f);
-        private static readonly Color ProfessionalThemeColorTint10 = new Color(0.9f, 0.9f, 0.9f);
-
-        public static Color ColorTint100 => EditorGUIUtility.isProSkin ? ProfessionalThemeColorTint100 : PersonalThemeColorTint100;
-        public static Color ColorTint75 => EditorGUIUtility.isProSkin ? ProfessionalThemeColorTint75 : PersonalThemeColorTint75;
-        public static Color ColorTint50 => EditorGUIUtility.isProSkin ? ProfessionalThemeColorTint50 : PersonalThemeColorTint50;
-        public static Color ColorTint25 => EditorGUIUtility.isProSkin ? ProfessionalThemeColorTint25 : PersonalThemeColorTint25;
-        public static Color ColorTint10 => EditorGUIUtility.isProSkin ? ProfessionalThemeColorTint10 : PersonalThemeColorTint10;
+        public static readonly Color ColorTint100 = new Color(1f, 1f, 1f);
+        public static readonly Color ColorTint75 = new Color(0.75f, 0.75f, 0.75f);
+        public static readonly Color ColorTint50 = new Color(0.5f, 0.5f, 0.5f);
+        public static readonly Color ColorTint25 = new Color(0.25f, 0.25f, 0.25f);
+        public static readonly Color ColorTint10 = new Color(0.10f, 0.10f, 0.10f);
 
         // default UI sizes
         public const int TitleFontSize = 14;
@@ -154,7 +142,7 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
         }
 
         /// <summary>
-        /// Render documentation button routing to relevant URI
+        /// Render documentation button routing to revelant URI
         /// </summary>
         /// <param name="docURL">documentation URL to open on button click</param>
         /// <returns>true if button clicked, false otherwise</returns>
@@ -169,14 +157,10 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
                     tooltip = docURL,
                 };
 
-                // The documentation button should always be enabled.
-                using (new GUIEnabledWrapper())
+                if (GUILayout.Button(buttonContent, EditorStyles.miniButton, GUILayout.MaxWidth(DocLinkWidth)))
                 {
-                    if (GUILayout.Button(buttonContent, EditorStyles.miniButton, GUILayout.MaxWidth(DocLinkWidth)))
-                    {
-                        Application.OpenURL(docURL);
-                        return true;
-                    }
+                    Application.OpenURL(docURL);
+                    return true;
                 }
             }
 
@@ -478,7 +462,7 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
         /// <summary>
         /// Draws a section start (initiated by the Header attribute)
         /// </summary>
-        public static bool DrawSectionFoldout(string headerName, bool open = true, GUIStyle style = null)
+        public static bool DrawSectionFoldout(string headerName, bool open = true, GUIStyle style = null, int size = 0)
         {
             if (style == null)
             {
@@ -493,10 +477,10 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
         /// <summary>
         /// Draws a section start with header name and save open/close state to given preference key in SessionState
         /// </summary>
-        public static bool DrawSectionFoldoutWithKey(string headerName, string preferenceKey = null, GUIStyle style = null, bool defaultOpen = true)
+        public static bool DrawSectionFoldoutWithKey(string headerName, string preferenceKey = null, GUIStyle style = null, int size = 0)
         {
-            bool showPref = SessionState.GetBool(preferenceKey, defaultOpen);
-            bool show = DrawSectionFoldout(headerName, showPref, style);
+            bool showPref = SessionState.GetBool(preferenceKey, true);
+            bool show = DrawSectionFoldout(headerName, showPref, style, size);
             if (show != showPref)
             {
                 SessionState.SetBool(preferenceKey, show);

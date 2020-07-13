@@ -10,7 +10,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// Script used to start and stop recording sessions in the current dictation system and report the transcribed text via UnityEvents.
     /// For this script to work, a dictation system like 'Windows Dictation Input Provider' must be added to the Data Providers in the Input System profile.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/DictationHandler")]
     public class DictationHandler : BaseInputHandler, IMixedRealityDictationHandler
     {
         [SerializeField]
@@ -81,13 +80,13 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         protected override void RegisterHandlers()
         {
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealityDictationHandler>(this);
+            InputSystem?.RegisterHandler<IMixedRealityDictationHandler>(this);
         }
 
         /// <inheritdoc />
         protected override void UnregisterHandlers()
         {
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealityDictationHandler>(this);
+            InputSystem?.UnregisterHandler<IMixedRealityDictationHandler>(this);
         }
 
         #endregion InputSystemGlobalHandlerListener Implementation
@@ -122,7 +121,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             base.Start();
 
-            dictationSystem = (CoreServices.InputSystem as IMixedRealityDataProviderAccess)?.GetDataProvider<IMixedRealityDictationSystem>();
+            dictationSystem = (InputSystem as IMixedRealityDataProviderAccess)?.GetDataProvider<IMixedRealityDictationSystem>();
             Debug.Assert(dictationSystem != null, "No dictation system found. In order to use dictation, add a dictation system like 'Windows Dictation Input Provider' to the Data Providers in the Input System profile");
 
             if (startRecordingOnStart)

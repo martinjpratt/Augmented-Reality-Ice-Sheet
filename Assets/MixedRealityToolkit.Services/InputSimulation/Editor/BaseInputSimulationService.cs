@@ -21,7 +21,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <summary>
         /// Active controllers
         /// </summary>
-        private IMixedRealityController[] activeControllers = System.Array.Empty<IMixedRealityController>();
+        private IMixedRealityController[] activeControllers = new IMixedRealityController[0];
 
         /// <inheritdoc />
         public override IMixedRealityController[] GetActiveControllers()
@@ -31,38 +31,13 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         #region BaseInputDeviceManager Implementation
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the data provider.</param>
-        /// <param name="inputSystem">The <see cref="Microsoft.MixedReality.Toolkit.Input.IMixedRealityInputSystem"/> instance that receives data from this provider.</param>
-        /// <param name="name">Friendly name of the service.</param>
-        /// <param name="priority">Service priority. Used to determine order of instantiation.</param>
-        /// <param name="profile">The service's configuration profile.</param>
-        [System.Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
-        protected BaseInputSimulationService(
+        public BaseInputSimulationService(
             IMixedRealityServiceRegistrar registrar,
             IMixedRealityInputSystem inputSystem,
             string name,
             uint priority,
-            BaseMixedRealityProfile profile) : this(inputSystem, name, priority, profile)
-        {
-            Registrar = registrar;
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="inputSystem">The <see cref="Microsoft.MixedReality.Toolkit.Input.IMixedRealityInputSystem"/> instance that receives data from this provider.</param>
-        /// <param name="name">Friendly name of the service.</param>
-        /// <param name="priority">Service priority. Used to determine order of instantiation.</param>
-        /// <param name="profile">The service's configuration profile.</param>
-        protected BaseInputSimulationService(
-            IMixedRealityInputSystem inputSystem,
-            string name,
-            uint priority,
-            BaseMixedRealityProfile profile) : base(inputSystem, name, priority, profile)
-        { }
+            BaseMixedRealityProfile profile) : base(registrar, inputSystem, name, priority, profile)
+        {}
 
         #endregion BaseInputDeviceManager Implementation
 
@@ -108,7 +83,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             SupportedControllerType st = simulationMode == HandSimulationMode.Gestures ? SupportedControllerType.GGVHand : SupportedControllerType.ArticulatedHand;
             IMixedRealityPointer[] pointers = RequestPointers(st, handedness);
 
-            var inputSource = Service?.RequestNewGenericInputSource($"{handedness} Hand", pointers, InputSourceType.Hand);
+            var inputSource = InputSystem?.RequestNewGenericInputSource($"{handedness} Hand", pointers, InputSourceType.Hand);
             switch (simulationMode)
             {
                 case HandSimulationMode.Articulated:
@@ -129,7 +104,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 return null;
             }
 
-            if (!controller.SetupConfiguration(controllerType))
+            if (!controller.SetupConfiguration(controllerType, InputSourceType.Hand))
             {
                 // Controller failed to be setup correctly.
                 Debug.LogError($"Failed to Setup {controllerType} controller");
@@ -142,7 +117,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 controller.InputSource.Pointers[i].Controller = controller;
             }
 
-            Service?.RaiseSourceDetected(controller.InputSource, controller);
+            InputSystem?.RaiseSourceDetected(controller.InputSource, controller);
 
             trackedHands.Add(handedness, controller);
             UpdateActiveControllers();
@@ -155,9 +130,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             var controller = GetHandDevice(handedness);
             if (controller != null)
             {
-                Service?.RaiseSourceLost(controller.InputSource, controller);
-
-                RecyclePointers(controller.InputSource);
+                InputSystem?.RaiseSourceLost(controller.InputSource, controller);
 
                 trackedHands.Remove(handedness);
                 UpdateActiveControllers();
@@ -168,11 +141,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             foreach (var controller in trackedHands.Values)
             {
-                Service?.RaiseSourceLost(controller.InputSource, controller);
-
-                RecyclePointers(controller.InputSource);
+                InputSystem?.RaiseSourceLost(controller.InputSource, controller);
             }
-
             trackedHands.Clear();
             UpdateActiveControllers();
         }

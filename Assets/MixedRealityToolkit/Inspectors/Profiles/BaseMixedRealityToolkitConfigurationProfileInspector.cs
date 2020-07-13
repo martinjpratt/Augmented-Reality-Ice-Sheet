@@ -1,10 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.﻿
 
-using Microsoft.MixedReality.Toolkit.Input;
-using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Utilities.Editor;
-using Microsoft.MixedReality.Toolkit.Utilities.Editor.Search;
 using System.Reflection;
 using UnityEditor;
 using UnityEngine;
@@ -58,24 +55,17 @@ namespace Microsoft.MixedReality.Toolkit.Editor
         }
 
         /// <summary>
-        /// Render the Mixed Reality Toolkit Logo and search field.
+        /// Render the Mixed Reality Toolkit Logo.
         /// </summary>
-        /// <returns>True if the rest of the inspector should be drawn.</returns>
-        protected bool RenderMRTKLogoAndSearch()
+        protected void RenderMRTKLogo()
         {
             // If we're being rendered as a sub profile, don't show the logo
             if (RenderAsSubProfile)
             {
-                return true;
-            }
-
-            if (MixedRealitySearchInspectorUtility.DrawSearchInterface(target))
-            {
-                return false;
+                return;
             }
 
             MixedRealityInspectorUtility.RenderMixedRealityToolkitLogo();
-            return true;
         }
 
         /// <summary>
@@ -146,22 +136,6 @@ namespace Microsoft.MixedReality.Toolkit.Editor
         }
 
         /// <summary>
-        /// Inspect the attributes of the provided system type to determine if a configuration profile is required.
-        /// </summary>
-        /// <param name="serviceType">The system type representing the service.</param>
-        /// <returns>
-        /// True if the service is decorated with an attribute indicating a profile is required, false otherwise.
-        /// </returns>
-        protected bool IsProfileRequired(SystemType serviceType)
-        {
-            // Services marked with the MixedRealityExtensionServiceAttribute (or a derivative)
-            // support specifying whether or not a profile is required.
-            MixedRealityExtensionServiceAttribute attribute = (serviceType?.Type != null) ? MixedRealityExtensionServiceAttribute.Find(serviceType.Type) : null;
-
-            return ((attribute != null) && attribute.RequiresProfile);
-        }
-
-        /// <summary>
         /// Helper function to render header correctly for all profiles
         /// </summary>
         /// <param name="title">Title of profile</param>
@@ -170,14 +144,9 @@ namespace Microsoft.MixedReality.Toolkit.Editor
         /// <param name="isProfileInitialized">profile properties are full initialized for rendering</param>
         /// <param name="backText">Text for back button if not rendering as sub-profile</param>
         /// <param name="backProfile">Target profile to return to if not rendering as sub-profile</param>
-        /// <returns>True if the rest of the profile should be rendered.</returns>
-        protected bool RenderProfileHeader(string title, string description, Object selectionObject, bool isProfileInitialized = true, BackProfileType returnProfileTarget = BackProfileType.Configuration)
+        protected void RenderProfileHeader(string title, string description, Object selectionObject, bool isProfileInitialized = true, BackProfileType returnProfileTarget = BackProfileType.Configuration)
         {
-            if (!RenderMRTKLogoAndSearch())
-            {
-                CheckEditorPlayMode();
-                return false;
-            }
+            RenderMRTKLogo();
 
             var profile = target as BaseMixedRealityProfile;
             if (!RenderAsSubProfile)
@@ -231,8 +200,6 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             }
 
             EditorGUILayout.LabelField(string.Empty, GUI.skin.horizontalSlider);
-
-            return true;
         }
 
         /// <summary>

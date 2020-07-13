@@ -14,8 +14,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
     /// A button that can be pushed via direct touch.
     /// You can use <see cref="Microsoft.MixedReality.Toolkit.PhysicalPressEventRouter"/> to route these events to <see cref="Microsoft.MixedReality.Toolkit.UI.Interactable"/>.
     ///</summary>
-    [HelpURL("https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/README_Button.html")]
-    [AddComponentMenu("Scripts/MRTK/SDK/PressableButton")]
     public class PressableButton : MonoBehaviour, IMixedRealityTouchHandler
     {
         const string InitialMarkerTransformName = "Initial Marker";
@@ -249,9 +247,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
             {
                 if (Application.isPlaying && movingButtonVisuals) // we're using a cached position in play mode as the moving visuals will be moved during button interaction
                 {
-                    var parentTransform = PushSpaceSourceTransform.parent;
-                    var localPosition = (parentTransform == null) ? movingVisualsInitialLocalPosition : parentTransform.TransformVector(movingVisualsInitialLocalPosition);
-                    return PushSpaceSourceParentPosition + localPosition;
+                    return PushSpaceSourceParentPosition + movingButtonVisuals.transform.TransformVector(movingVisualsInitialLocalPosition);
                 }
                 else
                 {
@@ -278,7 +274,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 Debug.LogWarning("PressableButton will not work if game object layer is set to 'Ignore Raycast'.");
             }
 
-            movingVisualsInitialLocalPosition = PushSpaceSourceTransform.localPosition;
+            movingVisualsInitialLocalPosition = movingButtonVisuals.transform.localPosition;
 
             // Ensure everything is set to initial positions correctly.
             UpdateMovingVisualsPosition();

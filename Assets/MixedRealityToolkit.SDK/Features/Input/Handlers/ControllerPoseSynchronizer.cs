@@ -9,15 +9,19 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// <summary>
     /// Waits for a controller to be initialized, then synchronizes its transform position to a specified handedness.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/ControllerPoseSynchronizer")]
     public class ControllerPoseSynchronizer : InputSystemGlobalHandlerListener, IMixedRealityControllerPoseSynchronizer
     {
         #region IMixedRealityControllerPoseSynchronizer Implementation
 
+        [SerializeField]
+        [Tooltip("The handedness this controller should synchronize with.")]
+        private Handedness handedness = Handedness.Left;
+
         /// <inheritdoc />
         public Handedness Handedness
         {
-            get => Controller == null ? Handedness.None : Controller.ControllerHandedness;
+            get { return handedness; }
+            set { handedness = value; }
         }
 
         [SerializeField]
@@ -27,14 +31,14 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         public bool DestroyOnSourceLost
         {
-            get => destroyOnSourceLost;
-            set => destroyOnSourceLost = value;
+            get { return destroyOnSourceLost; }
+            set { destroyOnSourceLost = value; }
         }
 
         /// <summary>
         /// Is the controller this Synchronizer is registered to currently tracked?
         /// </summary>
-        public bool IsTracked => TrackingState == TrackingState.Tracked;
+        public bool IsTracked { get; protected set; } = false;
 
         /// <summary>
         /// The current tracking state of the assigned <see cref="Microsoft.MixedReality.Toolkit.Input.IMixedRealityController"/>
@@ -46,8 +50,17 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         public virtual IMixedRealityController Controller
         {
-            get => controller;
-            set => controller = value;
+            get { return controller; }
+            set
+            {
+                controller = value;
+
+                if (controller != null && gameObject != null)
+                {
+                    handedness = value.ControllerHandedness;
+                    gameObject.name = $"{handedness}_{gameObject.name}";
+                }
+            }
         }
 
         [SerializeField]
@@ -57,8 +70,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         public bool UseSourcePoseData
         {
-            get => useSourcePoseData;
-            set => useSourcePoseData = value;
+            get { return useSourcePoseData; }
+            set { useSourcePoseData = value; }
         }
 
         [SerializeField]
@@ -68,8 +81,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         public MixedRealityInputAction PoseAction
         {
-            get => poseAction;
-            set => poseAction = value;
+            get { return poseAction; }
+            set { poseAction = value; }
         }
 
         #endregion IMixedRealityControllerPoseSynchronizer Implementation
@@ -79,13 +92,13 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         protected override void RegisterHandlers()
         {
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealityControllerPoseSynchronizer>(this);
+            InputSystem?.RegisterHandler<IMixedRealityControllerPoseSynchronizer>(this);
         }
 
         /// <inheritdoc />
         protected override void UnregisterHandlers()
         {
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealityControllerPoseSynchronizer>(this);
+            InputSystem?.UnregisterHandler<IMixedRealityControllerPoseSynchronizer>(this);
         }
 
         #endregion InputSystemGlobalHandlerListener Implementation
@@ -101,9 +114,10 @@ namespace Microsoft.MixedReality.Toolkit.Input
             if (eventData.SourceId == Controller?.InputSource.SourceId &&
                 eventData.Controller?.ControllerHandedness == Handedness)
             {
+                IsTracked = false;
                 TrackingState = TrackingState.NotTracked;
 
-                if (DestroyOnSourceLost)
+                if (destroyOnSourceLost)
                 {
                     GameObjectExtensions.DestroyGameObject(gameObject);
                 }
@@ -115,6 +129,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             if (eventData.SourceId == Controller?.InputSource.SourceId)
             {
+                IsTracked = eventData.SourceData == TrackingState.Tracked;
                 TrackingState = eventData.SourceData;
             }
         }
@@ -135,6 +150,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 eventData.SourceId == Controller?.InputSource.SourceId)
             {
                 TrackingState = eventData.Controller.TrackingState;
+                IsTracked = (TrackingState == TrackingState.Tracked);
                 transform.position = eventData.SourceData.Position;
                 transform.rotation = eventData.SourceData.Rotation;
             }
@@ -164,6 +180,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 if (!UseSourcePoseData &&
                     PoseAction == eventData.MixedRealityInputAction)
                 {
+                    IsTracked = true;
                     TrackingState = TrackingState.Tracked;
                     transform.position = eventData.InputData;
                 }
@@ -178,6 +195,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 if (!UseSourcePoseData &&
                     PoseAction == eventData.MixedRealityInputAction)
                 {
+                    IsTracked = true;
                     TrackingState = TrackingState.Tracked;
                     transform.rotation = eventData.InputData;
                 }
@@ -192,6 +210,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 if (!UseSourcePoseData &&
                     PoseAction == eventData.MixedRealityInputAction)
                 {
+                    IsTracked = true;
                     TrackingState = TrackingState.Tracked;
                     transform.position = eventData.InputData.Position;
                     transform.rotation = eventData.InputData.Rotation;
@@ -200,18 +219,5 @@ namespace Microsoft.MixedReality.Toolkit.Input
         }
 
         #endregion  IMixedRealityInputHandler Implementation
-
-        #region Obsolete
-
-        #pragma warning disable 0414
-        [SerializeField]
-        [HideInInspector]
-        [System.Obsolete("Use the Handedness property instead to get current handedness which is set by Controller attached")]
-        [Tooltip("Use the Handedness property instead to get current handedness which is set by Controller attached")]
-        private Handedness handedness = Handedness.Left;
-        #pragma warning restore 0414
-
-        #endregion
-
     }
 }

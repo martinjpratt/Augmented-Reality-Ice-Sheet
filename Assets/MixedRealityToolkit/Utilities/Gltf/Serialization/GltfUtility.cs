@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.MixedReality.Toolkit.Utilities;
 using Microsoft.MixedReality.Toolkit.Utilities.Gltf.Schema;
 using System;
 using System.Collections.Generic;
@@ -9,13 +10,6 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using UnityEngine;
-
-#if WINDOWS_UWP
-using Windows.Storage;
-using Windows.Storage.Streams;
-#else
-using Microsoft.MixedReality.Toolkit.Utilities;
-#endif
 
 namespace Microsoft.MixedReality.Toolkit.Utilities.Gltf.Serialization
 {
@@ -77,7 +71,7 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Gltf.Serialization
                 {
                     try
                     {
-                        var storageFile = await StorageFile.GetFileFromPathAsync(uri);
+                        var storageFile = await Windows.Storage.StorageFile.GetFileFromPathAsync(uri);
 
                         if (storageFile == null)
                         {
@@ -85,9 +79,9 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Gltf.Serialization
                             return null;
                         }
 
-                        var buffer = await FileIO.ReadBufferAsync(storageFile);
+                        var buffer = await Windows.Storage.FileIO.ReadBufferAsync(storageFile);
 
-                        using (DataReader dataReader = DataReader.FromBuffer(buffer))
+                        using (Windows.Storage.Streams.DataReader dataReader = Windows.Storage.Streams.DataReader.FromBuffer(buffer))
                         {
                             glbData = new byte[buffer.Length];
                             dataReader.ReadBytes(glbData);

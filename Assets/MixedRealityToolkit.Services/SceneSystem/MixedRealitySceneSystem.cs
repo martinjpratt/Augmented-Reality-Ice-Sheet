@@ -37,28 +37,14 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
             Lighting = 2,
         }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the service.</param>
-        /// <param name="profile">The configuration profile for the service.</param>
-        [Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
         public MixedRealitySceneSystem(
             IMixedRealityServiceRegistrar registrar,
-            MixedRealitySceneSystemProfile profile) : this(profile)
+            MixedRealitySceneSystemProfile profile) : base(registrar, profile)
         {
-            Registrar = registrar;
+            this.profile = profile;
         }
 
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="profile">The configuration profile for the service.</param>
-        public MixedRealitySceneSystem(
-            MixedRealitySceneSystemProfile profile) : base(profile)
-        { }
-
-        private MixedRealitySceneSystemProfile profile => ConfigurationProfile as MixedRealitySceneSystemProfile;
+        private MixedRealitySceneSystemProfile profile;
 
         // Internal scene operation info
         private bool managerSceneOpInProgress;
@@ -265,15 +251,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         /// <inheritdoc />
         public async Task UnloadContentByTag(string tag)
         {
-            try
-            {
-                await UnloadScenesInternal(profile.GetContentSceneNamesByTag(tag), SceneType.Content);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Error when attempting to unload content by tag " + tag);
-                Debug.LogException(e);
-            }
+            await UnloadScenesInternal(profile.GetContentSceneNamesByTag(tag), SceneType.Content);
         }
 
         /// <inheritdoc />
@@ -288,38 +266,15 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
             IEnumerable<string> loadedContentScenes;
             if (mode == LoadSceneMode.Single && GetLoadedContentScenes(out loadedContentScenes))
             {
-                try
-                {
-                    await UnloadScenesInternal(loadedContentScenes, SceneType.Content, 0, 0.5f, true);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Error when attempting to unload content " + String.Join(", ", loadedContentScenes));
-                    Debug.LogException(e);
-                }
-
-                try
-                {
-                    await LoadScenesInternal(scenesToLoad, SceneType.Content, activationToken, 0.5f, 1f, false);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Error when attempting to load content" + String.Join(", ", scenesToLoad));
-                    Debug.LogException(e);
-                }
+                await UnloadScenesInternal(loadedContentScenes, SceneType.Content, 0, 0.5f, true);
+                await LoadScenesInternal(scenesToLoad, SceneType.Content, activationToken, 0.5f, 1f, false);
             }
             else
             {
-                try
-                {
-                    await LoadScenesInternal(scenesToLoad, SceneType.Content, activationToken);
-                }
-                catch (Exception e)
-                {
-                    Debug.LogError("Error when attempting to load content" + String.Join(", ", scenesToLoad));
-                    Debug.LogException(e);
-                }
+                await LoadScenesInternal(scenesToLoad, SceneType.Content, activationToken);
             }
+
+            await LoadScenesInternal(scenesToLoad, SceneType.Content, activationToken);
         }
 
         /// <inheritdoc />
@@ -331,15 +286,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
                 return;
             }
 
-            try
-            {
-                await UnloadScenesInternal(scenesToUnload, SceneType.Content);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Error when attempting to unload content " + String.Join(", ", scenesToUnload));
-                Debug.LogException(e);
-            }
+            await UnloadScenesInternal(scenesToUnload, SceneType.Content);
         }
 
         /// <inheritdoc />
@@ -369,8 +316,8 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
             RuntimeSunlightSettings sunSettings = default(RuntimeSunlightSettings);
             if (!string.IsNullOrEmpty(newLightingSceneName) && !profile.GetLightingSceneSettings(
                 newLightingSceneName,
-                out lightingScene,
-                out lightingSettings,
+                out lightingScene, 
+                out lightingSettings, 
                 out renderSettings,
                 out sunSettings))
             {   // Make sure we don't try to load a non-existent scene
@@ -398,27 +345,11 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
                 }
             }
 
-            try
-            {
-                // Load the new lighting scene immediately
-                await LoadScenesInternal(new string[] { newLightingSceneName }, SceneType.Lighting, null, 0f, 0.5f, true);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Exception when attempting to load lighting scene " + newLightingSceneName);
-                Debug.LogException(e);
-            }
+            // Load the new lighting scene immediately
+            await LoadScenesInternal(new string[] { newLightingSceneName }, SceneType.Lighting, null, 0f, 0.5f, true);
 
-            try
-            {
-                // Unload the other lighting scenes
-                await UnloadScenesInternal(lightingSceneNames, SceneType.Lighting, 0.5f, 1f, false);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Exception when attempting to unload lighting scene " + string.Join(", ", lightingSceneNames));
-                Debug.LogException(e);
-            }
+            // Unload the other lighting scenes
+            await UnloadScenesInternal(lightingSceneNames, SceneType.Lighting, 0.5f, 1f, false);
         }
 
         /// <summary>
@@ -432,15 +363,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
                 return;
             }
 
-            try
-            {
-                await LoadScenesInternal(new string[] { managerSceneName }, SceneType.Manager);
-            }
-            catch (Exception e)
-            {
-                Debug.LogError("Error when attempting to set manager scene " + managerSceneName);
-                Debug.LogException(e);
-            }
+            await LoadScenesInternal(new string[] { managerSceneName }, SceneType.Manager);
         }
 
         /// <summary>
@@ -470,7 +393,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
                 int sceneIndex;
                 if (!RuntimeSceneUtils.FindScene(sceneName, out scene, out sceneIndex))
                 {
-                    Debug.LogError("Can't load invalid scene " + sceneName + " - make sure the scene name is spelled correctly and that you have added the scene to your MixedRealitySceneSystem profile's content scenes array.");
+                    Debug.LogError("Can't load invalid scene " + sceneName);
                 }
                 else
                 {
@@ -546,7 +469,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
                     activationToken?.SetReadyToProceed(readyToProceed);
 
                     sceneOpProgress = Mathf.Clamp01(SceneOperationProgress / totalSceneOps);
-
+                    
                     SetSceneOpProgress(true, Mathf.Lerp(progressOffset, progressTarget, sceneOpProgress), sceneType);
 
                     await Task.Yield();
@@ -576,7 +499,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
 
             // We're done!
             SetSceneOpProgress(sceneOpInProgressWhenFinished, progressTarget, sceneType);
-
+            
             InvokeLoadedActions(validNames, sceneType);
         }
 
@@ -584,7 +507,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         /// Internal method to handles scene unloads
         /// </summary>
         private async Task UnloadScenesInternal(
-            IEnumerable<string> scenesToUnload,
+            IEnumerable<string> scenesToUnload, 
             SceneType sceneType,
             float progressOffset = 0,
             float progressTarget = 1,
@@ -602,7 +525,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
                 int sceneIndex;
                 if (!RuntimeSceneUtils.FindScene(sceneName, out scene, out sceneIndex))
                 {
-                    Debug.LogError("Can't unload invalid scene " + sceneName + " - make sure the scene name is spelled correctly and that you have added the scene to your MixedRealitySceneSystem profile's content scenes array.");
+                    Debug.LogError("Can't unload invalid scene " + sceneName);
                 }
                 else
                 {
@@ -686,9 +609,9 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
             SetSceneOpProgress(sceneOpInProgressWhenFinished, progressTarget, sceneType);
 
             // Invoke our actions
-            InvokeUnloadedActions(validNames, sceneType);
+            InvokeUnloadedActions(validNames, sceneType);          
         }
-
+        
         private void SetSceneOpProgress(bool inProgress, float progress, SceneType sceneType)
         {
             switch (sceneType)
@@ -733,140 +656,108 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
 
         private void InvokeLoadedActions(List<string> sceneNames, SceneType sceneType)
         {
-            try
-            {
-                foreach (string sceneName in sceneNames)
-                {  // Announce scenes individually regardless of type
-                    OnSceneLoaded?.Invoke(sceneName);
-                }
-
-                switch (sceneType)
-                {
-                    case SceneType.Content:
-                        // Announce content as a set
-                        OnContentLoaded?.Invoke(sceneNames);
-                        break;
-
-                    case SceneType.Lighting:
-                        // We only handle lighting scenes one at a time
-                        Debug.Assert(sceneNames.Count == 1);
-                        OnLightingLoaded?.Invoke(sceneNames[0]);
-                        break;
-
-                    default:
-                        // Don't announce other types of scenes individually
-                        break;
-                }
+            foreach (string sceneName in sceneNames)
+            {  // Announce scenes individually regardless of type
+                OnSceneLoaded?.Invoke(sceneName);
             }
-            catch (Exception e)
+
+            switch (sceneType)
             {
-                Debug.LogError("Error when attempting to invoke loaded actions for " + string.Join(", ", sceneNames));
-                Debug.LogException(e);
+                case SceneType.Content:
+                    // Announce content as a set
+                    OnContentLoaded?.Invoke(sceneNames);
+                    break;
+
+                case SceneType.Lighting:
+                    // We only handle lighting scenes one at a time
+                    Debug.Assert(sceneNames.Count == 1);
+                    OnLightingLoaded?.Invoke(sceneNames[0]);
+                    break;
+
+                default:
+                    // Don't announce other types of scenes invidually
+                    break;
             }
         }
 
         private void InvokeWillLoadActions(List<string> sceneNames, SceneType sceneType)
         {
-            try
-            {
-                foreach (string sceneName in sceneNames)
-                {   // Announce scenes individually regardless of type
-                    OnWillLoadScene?.Invoke(sceneName);
-                }
-
-                switch (sceneType)
-                {
-                    case SceneType.Content:
-                        // Announce content as a set
-                        OnWillLoadContent?.Invoke(sceneNames);
-                        break;
-
-                    case SceneType.Lighting:
-                        // We only handle lighting scenes one at a time
-                        Debug.Assert(sceneNames.Count == 1);
-                        OnWillLoadLighting?.Invoke(sceneNames[0]);
-                        break;
-
-                    default:
-                        // Don't announce other types of scenes individually
-                        break;
-                }
+            foreach (string sceneName in sceneNames)
+            {   // Announce scenes individually regardless of type
+                OnWillLoadScene?.Invoke(sceneName);
             }
-            catch (Exception e)
+
+            switch (sceneType)
             {
-                Debug.LogError("Error when attempting to invoke will load actions for " + string.Join(", ", sceneNames));
-                Debug.LogException(e);
+                case SceneType.Content:
+                    // Announce content as a set
+                    OnWillLoadContent?.Invoke(sceneNames);
+                    break;
+
+                case SceneType.Lighting:
+                    // We only handle lighting scenes one at a time
+                    Debug.Assert(sceneNames.Count == 1);
+                    OnWillLoadLighting?.Invoke(sceneNames[0]);
+                    break;
+
+                default:
+                    // Don't announce other types of scenes invidually
+                    break;
             }
         }
 
         private void InvokeWillUnloadActions(List<string> sceneNames, SceneType sceneType)
         {
-            try
-            {
-                foreach (string sceneName in sceneNames)
-                {  // Announce scenes individually regardless of type
-                    OnWillUnloadScene?.Invoke(sceneName);
-                }
-
-                switch (sceneType)
-                {
-                    case SceneType.Content:
-                        // Announce content as a set
-                        OnWillUnloadContent?.Invoke(sceneNames);
-                        break;
-
-                    case SceneType.Lighting:
-                        // We only handle lighting scenes one at a time
-                        Debug.Assert(sceneNames.Count == 1);
-                        OnWillUnloadLighting?.Invoke(sceneNames[0]);
-                        break;
-
-                    default:
-                        // Don't announce other types of scenes individually
-                        break;
-                }
+            foreach (string sceneName in sceneNames)
+            {  // Announce scenes individually regardless of type
+                OnWillUnloadScene?.Invoke(sceneName);
             }
-            catch (Exception e)
+
+            switch (sceneType)
             {
-                Debug.LogError("Error when attempting to invoke will unload actions for " + string.Join(", ", sceneNames));
-                Debug.LogException(e);
+                case SceneType.Content:
+                    // Announce content as a set
+                    OnWillUnloadContent?.Invoke(sceneNames);
+                    break;
+
+                case SceneType.Lighting:
+                    // We only handle lighting scenes one at a time
+                    Debug.Assert(sceneNames.Count == 1);
+                    OnWillUnloadLighting?.Invoke(sceneNames[0]);
+                    break;
+
+                default:
+                    // Don't announce other types of scenes invidually
+                    break;
             }
         }
 
         private void InvokeUnloadedActions(List<string> sceneNames, SceneType sceneType)
         {
-            try
-            {
-                foreach (string sceneName in sceneNames)
-                {  // Announce scenes individually regardless of type
-                    OnSceneUnloaded?.Invoke(sceneName);
-                }
-
-                switch (sceneType)
-                {
-                    case SceneType.Content:
-                        // Announce content as a set
-                        OnContentUnloaded?.Invoke(sceneNames);
-                        break;
-
-                    case SceneType.Lighting:
-                        // We only handle lighting scenes one at a time
-                        Debug.Assert(sceneNames.Count == 1);
-                        OnLightingUnloaded?.Invoke(sceneNames[0]);
-                        break;
-
-                    default:
-                        // Don't announce other types of scenes invidually
-                        break;
-                }
+            foreach (string sceneName in sceneNames)
+            {  // Announce scenes individually regardless of type
+                OnSceneUnloaded?.Invoke(sceneName);
             }
-            catch (Exception e)
+
+            switch (sceneType)
             {
-                Debug.LogError("Error when attempting to invoke unloaded actions for " + string.Join(", ", sceneNames));
-                Debug.LogException(e);
+                case SceneType.Content:
+                    // Announce content as a set
+                    OnContentUnloaded?.Invoke(sceneNames);
+                    break;
+
+                case SceneType.Lighting:
+                    // We only handle lighting scenes one at a time
+                    Debug.Assert(sceneNames.Count == 1);
+                    OnLightingUnloaded?.Invoke(sceneNames[0]);
+                    break;
+
+                default:
+                    // Don't announce other types of scenes invidually
+                    break;
             }
         }
-
+        
         #endregion
 
         #region Utilities
@@ -927,7 +818,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         #endregion
 
         #region Utility Classes
-
+        
         /// <summary>
         /// A utility class used to track which content scenes are loaded, and which should come next / before.
         /// This logic could live in the service itself, but there may be cases where devs want to change how content is tracked without changing anything else.
@@ -935,11 +826,11 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         /// </summary>
         private sealed class SceneContentTracker
         {
-            public SceneContentTracker(MixedRealitySceneSystemProfile profile)
+            public SceneContentTracker (MixedRealitySceneSystemProfile profile)
             {
                 this.profile = profile;
 
-                CacheSortedContent();
+                CacheSortedContent();               
             }
 
             private MixedRealitySceneSystemProfile profile;
@@ -1044,7 +935,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         private sealed class SceneLightingExecutor
         {
             public void StartTransition(
-                RuntimeLightingSettings targetLightingSettings,
+                RuntimeLightingSettings targetLightingSettings, 
                 RuntimeRenderSettings targetRenderSettings,
                 RuntimeSunlightSettings targetSunlightSettings,
                 LightingSceneTransitionType transitionType = LightingSceneTransitionType.None,
@@ -1106,7 +997,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
                         currentSunlightSettings = RuntimeSunlightSettings.Lerp(prevSunlightSettings, targetSunlightSettings, transitionProgress);
                         break;
 
-                    case LightingSceneTransitionType.FadeToBlack:
+                    case LightingSceneTransitionType.FadeToBlack: 
                         // If we're in the first half of our transition, fade out to black
                         if (transitionProgress < 0.5f)
                         {

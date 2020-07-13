@@ -1,4 +1,4 @@
-﻿Shader "Custom/BlendLayersExample"
+Shader "Custom/BlendLayersExample"
 {
 	Properties
 	{

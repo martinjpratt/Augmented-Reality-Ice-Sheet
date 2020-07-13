@@ -4,7 +4,6 @@
 using Microsoft.MixedReality.Toolkit.Boundary;
 using Microsoft.MixedReality.Toolkit.Diagnostics;
 using Microsoft.MixedReality.Toolkit.Input;
-using Microsoft.MixedReality.Toolkit.Rendering;
 using Microsoft.MixedReality.Toolkit.SceneSystem;
 using Microsoft.MixedReality.Toolkit.SpatialAwareness;
 using Microsoft.MixedReality.Toolkit.Utilities;
@@ -55,7 +54,6 @@ namespace Microsoft.MixedReality.Toolkit.Editor
 
         // Editor settings
         private SerializedProperty useServiceInspectors;
-        private SerializedProperty renderDepthBuffer;
 
         private Func<bool>[] RenderProfileFuncs;
 
@@ -110,63 +108,40 @@ namespace Microsoft.MixedReality.Toolkit.Editor
 
             // Editor settings
             useServiceInspectors = serializedObject.FindProperty("useServiceInspectors");
-            renderDepthBuffer = serializedObject.FindProperty("renderDepthBuffer");
 
             SelectedProfileTab = SessionState.GetInt(SelectedTabPreferenceKey, SelectedProfileTab);
 
-            if (RenderProfileFuncs == null)
+            if (this.RenderProfileFuncs == null)
             {
-                RenderProfileFuncs = new Func<bool>[]
+                this.RenderProfileFuncs = new Func<bool>[]
                 {
                     () => {
-                        bool changed = false;
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            EditorGUILayout.PropertyField(enableCameraSystem);
+                        // Note: cannot use mrtkConfigProfile.Is*SystemEnabled because property checks multiple parameters
+                        CheckSystemConfiguration("Camera System", enableCameraSystem.boolValue,
+                            mrtkConfigProfile.CameraSystemType,
+                            mrtkConfigProfile.CameraProfile != null);
 
-                            const string service = "Camera System";
-                            if (enableCameraSystem.boolValue)
-                            {
-                                CheckSystemConfiguration(service, mrtkConfigProfile.CameraSystemType, mrtkConfigProfile.CameraProfile != null);
+                        EditorGUILayout.PropertyField(enableCameraSystem);
+                        EditorGUILayout.PropertyField(cameraSystemType);
 
-                                EditorGUILayout.PropertyField(cameraSystemType);
-
-                                changed |= RenderProfile(cameraProfile, typeof(MixedRealityCameraProfile), true, false);
-                            }
-                            else
-                            {
-                                RenderSystemDisabled(service);
-                            }
-
-                            changed |= c.changed;
-                        }
-                        return changed;
+                        return RenderProfile(cameraProfile, typeof(MixedRealityCameraProfile), true, false);
                     },
                     () => {
-                        bool changed = false;
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            EditorGUILayout.PropertyField(enableInputSystem);
+                        // Note: cannot use mrtkConfigProfile.Is*SystemEnabled because property checks multiple parameters
+                        CheckSystemConfiguration("Input System", enableInputSystem.boolValue,
+                            mrtkConfigProfile.InputSystemType,
+                            mrtkConfigProfile.InputSystemProfile != null);
 
-                            const string service = "Input System";
-                            if (enableInputSystem.boolValue)
-                            {
-                                CheckSystemConfiguration(service, mrtkConfigProfile.InputSystemType, mrtkConfigProfile.InputSystemProfile != null);
-
-                                EditorGUILayout.PropertyField(inputSystemType);
-
-                                changed |= RenderProfile(inputSystemProfile, null, true, false, typeof(IMixedRealityInputSystem));
-                            }
-                            else
-                            {
-                                RenderSystemDisabled(service);
-                            }
-
-                            changed |= c.changed;
-                        }
-                        return changed;
+                        EditorGUILayout.PropertyField(enableInputSystem);
+                        EditorGUILayout.PropertyField(inputSystemType);
+                        return RenderProfile(inputSystemProfile, null, true, false, typeof(IMixedRealityInputSystem));
                     },
                     () => {
+                        // Note: cannot use mrtkConfigProfile.Is*SystemEnabled because property checks multiple parameters
+                        CheckSystemConfiguration("Boundary System", enableBoundarySystem.boolValue,
+                            mrtkConfigProfile.BoundarySystemSystemType,
+                            mrtkConfigProfile.BoundaryVisualizationProfile != null);
+
                         var experienceScale = (ExperienceScale)targetExperienceScale.intValue;
                         if (experienceScale != ExperienceScale.Room)
                         {
@@ -175,145 +150,58 @@ namespace Microsoft.MixedReality.Toolkit.Editor
                             EditorGUILayout.HelpBox("Boundaries are only supported in Room scale experiences.", MessageType.Warning);
                             GUILayout.Space(6f);
                         }
-
-                        bool changed = false;
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            EditorGUILayout.PropertyField(enableBoundarySystem);
-
-                            const string service = "Boundary System";
-                            if (enableBoundarySystem.boolValue)
-                            {
-                                CheckSystemConfiguration(service, mrtkConfigProfile.BoundarySystemSystemType, mrtkConfigProfile.BoundaryVisualizationProfile != null);
-
-                                EditorGUILayout.PropertyField(boundarySystemType);
-
-                                changed |= RenderProfile(boundaryVisualizationProfile, null, true, false, typeof(IMixedRealityBoundarySystem));
-                            }
-                            else
-                            {
-                                RenderSystemDisabled(service);
-                            }
-
-                            changed |= c.changed;
-                        }
-                        return changed;
+                        EditorGUILayout.PropertyField(enableBoundarySystem);
+                        EditorGUILayout.PropertyField(boundarySystemType);
+                        return RenderProfile(boundaryVisualizationProfile, null, true, false, typeof(IMixedRealityBoundarySystem));
                     },
                     () => {
-                        const string service = "Teleport System";
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            EditorGUILayout.PropertyField(enableTeleportSystem);
-                            if (enableTeleportSystem.boolValue)
-                            {
-                                 // Teleport System does not have a profile scriptableobject so auto to true
-                                CheckSystemConfiguration(service, mrtkConfigProfile.TeleportSystemSystemType,true);
+                        // Note: cannot use mrtkConfigProfile.Is*SystemEnabled because property checks multiple parameters
+                        // Teleport System does not have a profile scriptableobject so auto to true
+                        CheckSystemConfiguration("Teleport System", enableTeleportSystem.boolValue,
+                            mrtkConfigProfile.TeleportSystemSystemType, 
+                            true);
 
-                                EditorGUILayout.PropertyField(teleportSystemType);
-                            }
-                            else
-                            {
-                                RenderSystemDisabled(service);
-                            }
-
-                            return c.changed;
-                        }
+                        EditorGUILayout.PropertyField(enableTeleportSystem);
+                        EditorGUILayout.PropertyField(teleportSystemType);
+                        return false;
                     },
                     () => {
-                        bool changed = false;
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            const string service = "Spatial Awareness System";
-                            EditorGUILayout.PropertyField(enableSpatialAwarenessSystem);
+                        // Note: cannot use mrtkConfigProfile.Is*SystemEnabled because property checks multiple parameters
+                        CheckSystemConfiguration("Spatial Awareness System", enableSpatialAwarenessSystem.boolValue,
+                            mrtkConfigProfile.SpatialAwarenessSystemSystemType,
+                            mrtkConfigProfile.SpatialAwarenessSystemProfile != null);
 
-                            if (enableSpatialAwarenessSystem.boolValue)
-                            {
-                                CheckSystemConfiguration(service, mrtkConfigProfile.SpatialAwarenessSystemSystemType, mrtkConfigProfile.SpatialAwarenessSystemProfile != null);
-
-                                EditorGUILayout.PropertyField(spatialAwarenessSystemType);
-
-                                EditorGUILayout.HelpBox("Spatial Awareness settings are configured per observer.", MessageType.Info);
-
-                                changed |= RenderProfile(spatialAwarenessSystemProfile, null, true, false, typeof(IMixedRealitySpatialAwarenessSystem));
-                            }
-                            else
-                            {
-                                RenderSystemDisabled(service);
-                            }
-
-                            changed |= c.changed;
-                        }
-                        return changed;
+                        EditorGUILayout.PropertyField(enableSpatialAwarenessSystem);
+                        EditorGUILayout.PropertyField(spatialAwarenessSystemType);
+                        EditorGUILayout.HelpBox("Spatial Awareness settings are configured per observer.", MessageType.Info);
+                        return RenderProfile(spatialAwarenessSystemProfile, null, true, false, typeof(IMixedRealitySpatialAwarenessSystem));
                     },
                     () => {
+                        // Note: cannot use mrtkConfigProfile.Is*SystemEnabled because property checks multiple parameters
+                        CheckSystemConfiguration("Diagnostics System", enableDiagnosticsSystem.boolValue,
+                            mrtkConfigProfile.DiagnosticsSystemSystemType,
+                            mrtkConfigProfile.DiagnosticsSystemProfile != null);
+
                         EditorGUILayout.HelpBox("It is recommended to enable the Diagnostics system during development. Be sure to disable prior to building your shipping product.", MessageType.Warning);
-
-                        bool changed = false;
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            EditorGUILayout.PropertyField(enableDiagnosticsSystem);
-
-                            const string service = "Diagnostics System";
-                            if (enableDiagnosticsSystem.boolValue)
-                            {
-                                CheckSystemConfiguration(service, mrtkConfigProfile.DiagnosticsSystemSystemType, mrtkConfigProfile.DiagnosticsSystemProfile != null);
-
-                                EditorGUILayout.PropertyField(diagnosticsSystemType);
-
-                                changed |= RenderProfile(diagnosticsSystemProfile, typeof(MixedRealityDiagnosticsProfile));
-                            }
-                            else
-                            {
-                                RenderSystemDisabled(service);
-                            }
-
-                            changed |= c.changed;
-                        }
-                        return changed;
+                        EditorGUILayout.PropertyField(enableDiagnosticsSystem);
+                        EditorGUILayout.PropertyField(diagnosticsSystemType);
+                        return RenderProfile(diagnosticsSystemProfile, typeof(MixedRealityDiagnosticsProfile));
                     },
                     () => {
-                        bool changed = false;
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            EditorGUILayout.PropertyField(enableSceneSystem);
-                            const string service = "Scene System";
-                            if (enableSceneSystem.boolValue)
-                            {
-                                CheckSystemConfiguration(service, mrtkConfigProfile.SceneSystemSystemType, mrtkConfigProfile.SceneSystemProfile != null);
+                        // Note: cannot use mrtkConfigProfile.Is*SystemEnabled because property checks multiple parameters
+                        CheckSystemConfiguration("Scene System", enableSceneSystem.boolValue,
+                            mrtkConfigProfile.SceneSystemSystemType,
+                            mrtkConfigProfile.SceneSystemProfile != null);
 
-                                EditorGUILayout.PropertyField(sceneSystemType);
-
-                                changed |= RenderProfile(sceneSystemProfile, typeof(MixedRealitySceneSystemProfile), true, true, typeof(IMixedRealitySceneSystem));
-                            }
-
-                            changed |= c.changed;
-                        }
-                        return changed;
+                        EditorGUILayout.PropertyField(enableSceneSystem);
+                        EditorGUILayout.PropertyField(sceneSystemType);
+                        return RenderProfile(sceneSystemProfile, typeof(MixedRealitySceneSystemProfile), true, true, typeof(IMixedRealitySceneSystem));
                     },
                     () => {
                         return RenderProfile(registeredServiceProvidersProfile, typeof(MixedRealityRegisteredServiceProvidersProfile), true, false);
                     },
                     () => {
                         EditorGUILayout.PropertyField(useServiceInspectors);
-
-                        using (var c = new EditorGUI.ChangeCheckScope())
-                        {
-                            EditorGUILayout.PropertyField(renderDepthBuffer);
-                            if (c.changed)
-                            {
-                                if (renderDepthBuffer.boolValue)
-                                {
-                                    CameraCache.Main.gameObject.AddComponent<DepthBufferRenderer>();
-                                }
-                                else
-                                {
-                                    foreach (var dbr in FindObjectsOfType<DepthBufferRenderer>())
-                                    {
-                                        UnityObjectExtensions.DestroyObject(dbr);
-                                    }
-                                }
-                            }
-                        }
                         return false;
                     },
                 };
@@ -325,11 +213,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             var configurationProfile = (MixedRealityToolkitConfigurationProfile)target;
             serializedObject.Update();
 
-            if (!RenderMRTKLogoAndSearch())
-            {
-                CheckEditorPlayMode();
-                return;
-            }
+            RenderMRTKLogo();
 
             CheckEditorPlayMode();
 
@@ -391,7 +275,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
             string scaleDescription = GetExperienceDescription(experienceScale);
             if (!string.IsNullOrEmpty(scaleDescription))
             {
-                EditorGUILayout.HelpBox(scaleDescription, MessageType.None);
+                EditorGUILayout.HelpBox(scaleDescription, MessageType.Info);
                 EditorGUILayout.Space();
             }
 
@@ -440,24 +324,18 @@ namespace Microsoft.MixedReality.Toolkit.Editor
         /// Checks if a system is enabled and the service type or validProfile is null, then displays warning message to the user
         /// </summary>
         /// <param name="service">name of service being tested</param>
+        /// <param name="systemEnabled">true if checkbox enabled, false otherwise</param>
         /// <param name="systemType">Selected implementation type for service</param>
         /// <param name="validProfile">true if profile scriptableobject property is not null, false otherwise</param>
-        protected void CheckSystemConfiguration(string service, SystemType systemType, bool validProfile)
+        protected void CheckSystemConfiguration(string service, bool systemEnabled, SystemType systemType, bool validProfile)
         {
-            if (systemType?.Type == null || !validProfile)
+            if (systemEnabled)
             {
-                EditorGUILayout.HelpBox($"{service} is enabled but will not be initialized because the System Type and/or Profile is not set.", MessageType.Warning);
+                if (systemType == null || systemType.Type == null || !validProfile)
+                {
+                    EditorGUILayout.HelpBox(service + " is enabled but will not be initialized because the System Type and/or Profile is not set.", MessageType.Warning);
+                }
             }
-        }
-
-        /// <summary>
-        /// Render helpbox that provided service string is disabled and none of it's functionality will be loaded at runtime
-        /// </summary>
-        protected static void RenderSystemDisabled(string service)
-        {
-            EditorGUILayout.Space();
-            EditorGUILayout.HelpBox($"The {service} is disabled.\n\nThis module will not be loaded and thus none of it's feature will be available at runtime.", MessageType.Info);
-            EditorGUILayout.Space();
         }
 
         private static string GetExperienceDescription(ExperienceScale experienceScale)

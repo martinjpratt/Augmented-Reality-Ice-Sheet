@@ -14,10 +14,23 @@ namespace Microsoft.MixedReality.Toolkit.Input
     {
         // If true, we will try to register ourselves as a global input listener in Start
         private bool lateInitialize = false;
+        private IMixedRealityInputSystem inputSystem = null;
+
+        /// <summary>
+        /// The active instance of the input system.
+        /// </summary>
+        protected IMixedRealityInputSystem InputSystem
+        {
+            get
+            {
+                MixedRealityServiceRegistry.TryGetService<IMixedRealityInputSystem>(out inputSystem);
+                return inputSystem;
+            }
+        }
 
         protected virtual void OnEnable()
         {
-            if (CoreServices.InputSystem != null)
+            if (InputSystem != null)
             {
                 RegisterHandlers();
             }
@@ -59,9 +72,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// </remarks>
         protected async Task EnsureInputSystemValid()
         {
-            if (CoreServices.InputSystem == null)
+            if (InputSystem == null)
             {
-                await new WaitUntil(() => CoreServices.InputSystem != null);
+                await new WaitUntil(() => InputSystem != null);
             }
         }
 

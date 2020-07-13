@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+
 public class RaycastDeformer : MonoBehaviour
 {
     bool isDeforming;
@@ -10,12 +11,16 @@ public class RaycastDeformer : MonoBehaviour
     double[,] perlinSurface = new double[41, 41];
     Vector3[] newVertices;
     Mesh bedMesh;
+    public bool arBed;
+
     // Start is called before the first frame update
     void Start()
     {
         startTime = Time.time;
         isDeforming = false;
+        arBed = false;
     }
+
     // Update is called once per frame
     void Update()
     {
@@ -25,46 +30,73 @@ public class RaycastDeformer : MonoBehaviour
             float distCovered = (Time.time - startTime) * speed;
             float fractionOfJourney = distCovered / journeyLength;
             //print(fractionOfJourney);
+
             Vector3[] tempVertices = new Vector3[bedMesh.vertexCount];
+
             for (int i = 0; i < bedMesh.vertices.Length; i++)
             {
                 tempVertices[i] = Vector3.Lerp(bedMesh.vertices[i], newVertices[i], fractionOfJourney);
             }
+
             bedMesh.vertices = tempVertices;
             bedMesh.RecalculateBounds();
             bedMesh.RecalculateNormals();
+
             if (fractionOfJourney >= 1)
             {
                 isDeforming = false;
             }
         }
     }
+
+
     public void DeformMesh()
     {
         bedMesh = this.GetComponent<MeshFilter>().mesh;
         newVertices = new Vector3[bedMesh.vertices.Length];
-        for (int i = 0; i < bedMesh.vertices.Length; i++)
+
+        for (int i = 0; i < bedMesh.vertices.Length; i++)   
         {
             int layerMask = 1 << 4;
             layerMask = ~layerMask;
+
             RaycastHit hit;
+
             Vector3 worldPt = transform.TransformPoint(bedMesh.vertices[i]);
-            if (Physics.Raycast(worldPt + (10 * Vector3.up), Vector3.down, out hit, Mathf.Infinity, layerMask))
+
+            if (Physics.Raycast(worldPt + (2 * Vector3.up), Vector3.down, out hit, Mathf.Infinity, layerMask))
             {
                 Vector3 hitPosition = transform.InverseTransformPoint(hit.point);
-                newVertices[i] = new Vector3(bedMesh.vertices[i].x, hitPosition.y, bedMesh.vertices[i].z);
+
+                if (hitPosition.y > 0)
+                {
+                    newVertices[i] = new Vector3(bedMesh.vertices[i].x, hitPosition.y + 0.2f, bedMesh.vertices[i].z);
+                }
+                else
+                {
+                    newVertices[i] = new Vector3(bedMesh.vertices[i].x, 0.2f, bedMesh.vertices[i].z);
+                }
             }
             else
             {
-                newVertices[i] = new Vector3(bedMesh.vertices[i].x, 0, bedMesh.vertices[i].z);
-                print("Missed");
+                newVertices[i] = new Vector3(bedMesh.vertices[i].x, 0.2f, bedMesh.vertices[i].z);
+                print("Missed"); 
             }
+            perlinSurface[i % 41, (int)Mathf.Floor((float)i / 41f)] = newVertices[i].y;
         }
+
         bedMesh.vertices = newVertices;
         bedMesh.RecalculateBounds();
         bedMesh.RecalculateNormals();
+        this.GetComponent<Build3DBed>().bed = perlinSurface;
+        this.GetComponent<Build3DBed>().GenerateSides(perlinSurface);
+        this.GetComponent<MeshCollider>().sharedMesh = bedMesh;
+
         //isDeforming = true;
+        arBed = true;
+
     }
+
     public void AddPerlinNoiseMountain()
     {
         bedMesh = this.GetComponent<MeshFilter>().mesh;
@@ -79,6 +111,7 @@ public class RaycastDeformer : MonoBehaviour
                 {
                     y = 0;
                 }
+
                 newVertices[i] = new Vector3(bedMesh.vertices[i].x, y, bedMesh.vertices[i].z);
                 perlinSurface[x, z] = y;
                 i++;
@@ -90,8 +123,9 @@ public class RaycastDeformer : MonoBehaviour
         this.GetComponent<Build3DBed>().bed = perlinSurface;
         this.GetComponent<Build3DBed>().GenerateSides(perlinSurface);
         this.GetComponent<MeshCollider>().sharedMesh = bedMesh;
-    }
 
+        arBed = false;
+    }
 
     public void AddPerlinNoise()
     {
@@ -107,6 +141,7 @@ public class RaycastDeformer : MonoBehaviour
                 {
                     y = 0;
                 }
+
                 newVertices[i] = new Vector3(bedMesh.vertices[i].x, y, bedMesh.vertices[i].z);
                 perlinSurface[x, z] = y;
                 i++;
@@ -118,5 +153,7 @@ public class RaycastDeformer : MonoBehaviour
         this.GetComponent<Build3DBed>().bed = perlinSurface;
         this.GetComponent<Build3DBed>().GenerateSides(perlinSurface);
         this.GetComponent<MeshCollider>().sharedMesh = bedMesh;
+
+        arBed = false;
     }
 }

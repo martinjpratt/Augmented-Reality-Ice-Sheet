@@ -19,7 +19,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
     /// </summary>
     [System.Serializable]
     [HelpURL("https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/README_Interactable.html")]
-    [AddComponentMenu("Scripts/MRTK/SDK/Interactable")]
     public class Interactable :
         MonoBehaviour,
         IMixedRealityFocusChangedHandler,
@@ -45,11 +44,10 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         [FormerlySerializedAs("States")]
         [SerializeField]
-        [Tooltip("ScriptableObject to reference for basic state logic to follow when interacting and transitioning between states. Should generally be \"DefaultInteractableStates\" object")]
         private States states;
 
         /// <summary>
-        /// ScriptableObject to reference for basic state logic to follow when interacting and transitioning between states. Should generally be "DefaultInteractableStates" object
+        /// A collection of states and basic state logic
         /// </summary>
         public States States
         {
@@ -67,8 +65,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
         public InteractableStates StateManager { get; protected set; }
 
         /// <summary>
-        /// The Interactable will only respond to input down events fired with the corresponding assigned Input Action.
-        /// Available input actions are populated via the Input Actions Profile under the MRTK Input System Profile assigned in the current scene
+        /// Which action is this interactable listening for
         /// </summary>
         public MixedRealityInputAction InputAction { get; set; }
 
@@ -77,18 +74,13 @@ namespace Microsoft.MixedReality.Toolkit.UI
         /// </summary>
         [HideInInspector]
         [SerializeField]
-        [Tooltip("The Interactable will only respond to input down events fired with the corresponding assigned Input Action." +
-        "Available input actions are populated via the Input Actions Profile under the MRTK Input System Profile assigned in the current scene.")]
-        private int InputActionId = 0;
+        private int InputActionId = -1;
 
         [FormerlySerializedAs("IsGlobal")]
         [SerializeField]
-        [Tooltip("If true, this Interactable will listen globally for any IMixedRealityInputHandler input events. These include general input up/down and clicks." +
-        "If false, this Interactable will only respond to general input click events if the pointer target is this GameObject's, or one of it's children's, collider.")]
         protected bool isGlobal = false;
         /// <summary>
-        /// If true, this Interactable will listen globally for any IMixedRealityInputHandler input events. These include general input up/down and clicks.
-        /// If false, this Interactable will only respond to general input click events if the pointer target is this GameObject's, or one of it's children's, collider.
+        /// Is the interactable listening to global events (input only)
         /// </summary>
         public bool IsGlobal
         {
@@ -111,7 +103,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         /// <summary>
         /// A way of adding more layers of states for controls like toggles.
-        /// This is capitalized and doesn't match conventions for backwards compatibility
+        /// This is capitalized and doesn't match conventions for backwards compatability
         /// (to not break people using Interactable). We tried using FormerlySerializedAs("Dimensions)
         /// and renaming to "dimensions", however Unity did not properly pick up the former serialization,
         /// so we maintained the old value. See https://github.com/microsoft/MixedRealityToolkit-Unity/issues/6169
@@ -224,14 +216,12 @@ namespace Microsoft.MixedReality.Toolkit.UI
         public bool CanDeselect = true;
 
         /// <summary>
-        /// This string keyword is the voice command that will fire a click on this Interactable.
+        /// A voice command to fire a click event
         /// </summary>
-        [Tooltip("This string keyword is the voice command that will fire a click on this Interactable.")]
         public string VoiceCommand = "";
 
         [FormerlySerializedAs("RequiresFocus")]
         [SerializeField]
-        [Tooltip("If true, then the voice command will only respond to voice commands while this Interactable has focus.")]
         public bool voiceRequiresFocus = true;
         /// <summary>
         /// Does the voice command require this to have focus?
@@ -246,7 +236,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 {
                     voiceRequiresFocus = value;
 
-                    // If we are active, then change global speech registration. 
+                    // If we are active, then change global speech registeration. 
                     // Register handle if we do not require focus, unregister otherwise
                     if (gameObject.activeInHierarchy)
                     {
@@ -322,10 +312,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
         // Field just used for serialization to save if the Interactable should start enabled or disabled
         [FormerlySerializedAs("Enabled")]
         [SerializeField]
-        [Tooltip("Defines whether the Interactable is enabled or not internally." +
-        "This is different than the enabled property at the GameObject/Component level." +
-        "When false, Interactable will continue to run in Unity but not respond to Input." +
-        "\n\nProperty is useful for disabling UX, such as greying out a button, until a user completes some pre-mandatory step such as fill out their name, etc")]
         private bool enabledOnStart = true;
 
         /// <summary>
@@ -479,6 +465,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         /// <summary>
         /// State that corresponds to Gesture reaching max threshold or limits
+        /// Currently not controlled by Interactable directly
         /// </summary>
         public virtual bool HasGestureMax
         {
@@ -488,6 +475,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         /// <summary>
         /// State that corresponds to Interactable is touching another object 
+        /// Currently not controlled by Interactable directly
         /// </summary>
         public virtual bool HasCollision
         {
@@ -579,7 +567,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         #endregion
 
-        #region MonoBehaviour Implementation
+        #region MonoBehaviorImplementation
 
         protected virtual void Awake()
         {
@@ -588,13 +576,13 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 States = GetDefaultInteractableStates();
             }
 
+            IsEnabled = enabledOnStart;
+
             InputAction = ResolveInputAction(InputActionId);
 
             CurrentDimension = startDimensionIndex;
 
             RefreshSetup();
-
-            IsEnabled = enabledOnStart;
         }
 
         protected virtual void OnEnable()
@@ -652,7 +640,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 if (rollOffTimer >= rollOffTime)
                 {
                     HasPress = false;
-                    HasGesture = false;
                 }
             }
 
@@ -691,7 +678,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
             lastState = StateManager.CurrentState();
         }
 
-        #endregion MonoBehaviour Implementation
+        #endregion MonoBehavior Implimentation
 
         #region Interactable Initiation
 
@@ -725,16 +712,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
         {
             for (int i = 0; i < InteractableEvents.Count; i++)
             {
-                var receiver = InteractableEvent.CreateReceiver(InteractableEvents[i]);
-                if (receiver != null)
-                {
-                    InteractableEvents[i].Receiver = receiver;
-                    InteractableEvents[i].Receiver.Host = this;
-                }
-                else
-                {
-                    Debug.LogWarning($"Empty event receiver found on {gameObject.name}, you may want to re-create this asset." );
-                }
+                InteractableEvents[i].Receiver = InteractableEvent.CreateReceiver(InteractableEvents[i]);
+                InteractableEvents[i].Receiver.Host = this;
             }
         }
 
@@ -1075,13 +1054,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
         public static MixedRealityInputAction ResolveInputAction(int index)
         {
             MixedRealityInputAction[] actions = CoreServices.InputSystem.InputSystemProfile.InputActionsProfile.InputActions;
-            if (actions?.Length > 0)
-            {
-                index = Mathf.Clamp(index, 0, actions.Length - 1);
-                return actions[index];
-            }
-
-            return default;
+            index = Mathf.Clamp(index, 0, actions.Length - 1);
+            return actions[index];
         }
 
         /// <summary>
@@ -1089,29 +1063,38 @@ namespace Microsoft.MixedReality.Toolkit.UI
         /// </summary>
         protected virtual bool ShouldListenToUpDownEvent(InputEventData data)
         {
-            if ((HasFocus || IsGlobal) && data.MixedRealityInputAction == InputAction)
+            if (!(HasFocus || IsGlobal))
             {
-                // Special case: Make sure that we are not being focused only by a PokePointer, since PokePointer
-                // dispatches touch events and should not be dispatching button presses like select, grip, menu, etc.
-                int focusingPointerCount = 0;
-                int focusingPokePointerCount = 0;
-                for (int i = 0; i < focusingPointers.Count; i++)
-                {
-                    if (focusingPointers[i].InputSourceParent.SourceId == data.SourceId)
-                    {
-                        focusingPointerCount++;
-                        if (focusingPointers[i] is PokePointer)
-                        {
-                            focusingPokePointerCount++;
-                        }
-                    }
-                }
-
-                bool onlyFocusedByPokePointer = focusingPointerCount > 0 && focusingPointerCount == focusingPokePointerCount;
-                return !onlyFocusedByPokePointer;
+                return false;
             }
 
-            return false;
+            if (data.MixedRealityInputAction != InputAction)
+            {
+                return false;
+            }
+
+            // Special case: Make sure that we are not being focused only by a PokePointer, since PokePointer
+            // dispatches touch events and should not be dispatching button presses like select, grip, menu, etc.
+            int focusingPointerCount = 0;
+            int focusingPokePointerCount = 0;
+            for (int i = 0; i < focusingPointers.Count; i++)
+            {
+                if (focusingPointers[i].InputSourceParent.SourceId == data.SourceId)
+                {
+                    focusingPointerCount++;
+                    if (focusingPointers[i] is PokePointer)
+                    {
+                        focusingPokePointerCount++;
+                    }
+                }
+            }
+
+            if (focusingPointerCount > 0 && focusingPointerCount == focusingPokePointerCount)
+            {
+                return false;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -1149,11 +1132,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
         /// </summary>
         public void TriggerOnClick()
         {
-            if (!IsEnabled)
-            {
-                return;
-            }
-
             IncreaseDimension();
 
             SendOnClick(null);
@@ -1296,22 +1274,27 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         private bool ShouldListenToMoveEvent<T>(InputEventData<T> eventData)
         {
-            if ((HasFocus || IsGlobal) && HasPress)
+            if (!(HasFocus || IsGlobal))
             {
-                // Ensure that this move event is from a pointer that is pressing the interactable
-                int matchingPointerCount = 0;
-                foreach (var pressingInputSource in pressingInputSources)
-                {
-                    if (pressingInputSource == eventData.InputSource)
-                    {
-                        matchingPointerCount++;
-                    }
-                }
-
-                return matchingPointerCount > 0;
+                return false;
             }
 
-            return false;
+            if (!HasPress)
+            {
+                return false;
+            }
+
+            // Ensure that this move event is from a pointer that is pressing the interactable
+            int matchingPointerCount = 0;
+            foreach (var pressingInputSource in pressingInputSources)
+            {
+                if (pressingInputSource == eventData.InputSource)
+                {
+                    matchingPointerCount++;
+                }
+            }
+
+            return matchingPointerCount > 0;
         }
 
         /// <summary>
@@ -1349,7 +1332,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
         /// <inheritdoc/>
         public void OnBeforeFocusChange(FocusEventData eventData)
         {
-            if (!IsEnabled)
+            if (!CanInteract())
             {
                 return;
             }
@@ -1382,22 +1365,20 @@ namespace Microsoft.MixedReality.Toolkit.UI
         /// <inheritdoc/>
         public void OnFocusEnter(FocusEventData eventData)
         {
-            if (!IsEnabled)
+            if (CanInteract())
             {
-                return;
+                Debug.Assert(focusingPointers.Count > 0,
+                    "OnFocusEnter called but focusingPointers == 0. Most likely caused by the presence of a child object " +
+                    "that is handling IMixedRealityFocusChangedHandler");
+
+                HasFocus = true;
             }
-
-            Debug.Assert(focusingPointers.Count > 0,
-                "OnFocusEnter called but focusingPointers == 0. Most likely caused by the presence of a child object " +
-                "that is handling IMixedRealityFocusChangedHandler");
-
-            HasFocus = true;
         }
 
         /// <inheritdoc/>
         public void OnFocusExit(FocusEventData eventData)
         {
-            if (!IsEnabled || !HasFocus)
+            if (!CanInteract() && !HasFocus)
             {
                 return;
             }
@@ -1421,12 +1402,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
         /// </summary>
         public void OnSpeechKeywordRecognized(SpeechEventData eventData)
         {
-            if (!IsEnabled)
-            {
-                return;
-            }
-
-            if (eventData.Command.Keyword == VoiceCommand && (!VoiceRequiresFocus || HasFocus))
+            if (eventData.Command.Keyword == VoiceCommand && (!VoiceRequiresFocus || HasFocus) && IsEnabled)
             {
                 StartGlobalVisual(true);
                 HasVoiceCommand = true;
@@ -1464,11 +1440,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         public void OnTouchStarted(HandTrackingInputEventData eventData)
         {
-            if (!IsEnabled)
-            {
-                return;
-            }
-
             HasPress = true;
             HasPhysicalTouch = true;
             eventData.Use();
@@ -1476,11 +1447,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
 
         public void OnTouchCompleted(HandTrackingInputEventData eventData)
         {
-            if (!IsEnabled)
-            {
-                return;
-            }
-
             HasPress = false;
             HasPhysicalTouch = false;
             eventData.Use();
@@ -1612,7 +1578,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
         }
 
         /// <summary>
-        /// Do voice commands require focus?
+        /// Do oice commands require focus?
         /// </summary>
         [System.Obsolete("Use VoiceRequiresFocus instead")]
         public bool RequiresFocus
@@ -1642,7 +1608,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 return States.StateList.ToArray();
             }
 
-            return System.Array.Empty<State>();
+            return new State[0];
         }
 
         /// <summary>

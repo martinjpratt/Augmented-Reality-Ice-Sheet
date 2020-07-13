@@ -8,9 +8,9 @@ Material:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_Name: IceSheetMaterial
-  m_Shader: {fileID: 4800000, guid: 6bf22f3f6f2a24ce5841e11fa1240bda, type: 3}
-  m_ShaderKeywords: _ALPHAPREMULTIPLY_ON _BORDER_LIGHT_USES_HOVER_COLOR _DISABLE_ALBEDO_MAP
-    _GLOSSYREFLECTIONS_OFF _HOVER_LIGHT _RIM_LIGHT _SPECULARHIGHLIGHTS_OFF
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: _BORDER_LIGHT_USES_HOVER_COLOR _DISABLE_ALBEDO_MAP _GLOSSYREFLECTIONS_OFF
+    _HOVER_LIGHT _RIM_LIGHT _SPECULARHIGHLIGHTS_OFF
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
@@ -61,7 +61,6 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - Vector1_3E95750: 0.3
     - _AlbedoAlphaMode: 0
     - _BlendOp: 0
     - _BorderLight: 0
@@ -70,7 +69,6 @@ Material:
     - _BorderMinValue: 0.1
     - _BorderWidth: 0.1
     - _BumpScale: 1
-    - _CenterHeight: 1000
     - _ClippingPlane: 0
     - _ClippingPlaneBorder: 0
     - _ClippingPlaneBorderWidth: 0.025
@@ -80,7 +78,7 @@ Material:
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
     - _DirectionalLight: 0
-    - _DstBlend: 10
+    - _DstBlend: 0
     - _EdgeSmoothingValue: 0.002
     - _EnableEmission: 0
     - _EnableHoverColorOpaqueOverride: 0
@@ -100,9 +98,8 @@ Material:
     - _HoverLight: 1
     - _HoverLightOpaque: 0
     - _InnerGlow: 0
-    - _MaxVariance: 500
     - _Metallic: 0
-    - _Mode: 3
+    - _Mode: 0
     - _NearPlaneFade: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -123,11 +120,8 @@ Material:
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZTest: 4
-    - _ZWrite: 0
+    - _ZWrite: 1
     m_Colors:
-    - Color_146A063D: {r: 1, g: 0.930426, b: 0, a: 0}
-    - Color_5200BA89: {r: 1, g: 1, b: 1, a: 0.49019608}
-    - Color_D1CC57E9: {r: 0, g: 0.3728266, b: 1, a: 0}
     - _ClipPlane: {r: 0, g: 1, b: 0, a: 0}
     - _ClippingPlaneBorderColor: {r: 1, g: 0.2, b: 0, a: 1}
     - _Color: {r: 1, g: 1, b: 1, a: 0.553}
@@ -141,9 +135,7 @@ Material:
     - _EnvironmentColorX: {r: 1, g: 0, b: 0, a: 1}
     - _EnvironmentColorY: {r: 0, g: 1, b: 0, a: 1}
     - _EnvironmentColorZ: {r: 0, g: 0, b: 1, a: 1}
-    - _HighColor: {r: 0.8679245, g: 0.7920232, b: 0.18422928, a: 1}
     - _HoverColorOpaqueOverride: {r: 1, g: 1, b: 1, a: 1}
     - _HoverColorOverride: {r: 1, g: 1, b: 1, a: 1}
     - _InnerGlowColor: {r: 1, g: 1, b: 1, a: 0.75}
-    - _LowColor: {r: 0.19624424, g: 0.50618565, b: 0.9245283, a: 1}
     - _RimColor: {r: 1, g: 1, b: 1, a: 1}

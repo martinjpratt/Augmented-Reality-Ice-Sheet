@@ -4,7 +4,6 @@
 using Microsoft.MixedReality.Toolkit.Input;
 using Microsoft.MixedReality.Toolkit.Input.UnityInput;
 using Microsoft.MixedReality.Toolkit.Utilities;
-using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.XR;
@@ -23,7 +22,7 @@ namespace Microsoft.MixedReality.Toolkit.OpenVR.Input
             nodeType = controllerHandedness == Handedness.Left ? XRNode.LeftHand : XRNode.RightHand;
         }
 
-        private readonly XRNode nodeType;
+        private XRNode nodeType;
 
         /// <summary>
         /// The current source state reading for this OpenVR Controller.
@@ -31,19 +30,14 @@ namespace Microsoft.MixedReality.Toolkit.OpenVR.Input
         public XRNodeState LastXrNodeStateReading { get; protected set; }
 
         /// <summary>
-        /// Tracking states returned from the InputTracking state tracking manager.
+        /// Tracking states returned from the InputTracking state tracking manager
         /// </summary>
         private readonly List<XRNodeState> nodeStates = new List<XRNodeState>();
-
-        /// <summary>
-        /// A private static list of previously loaded controller models.
-        /// </summary>
-        private static readonly Dictionary<Handedness, GameObject> controllerDictionary = new Dictionary<Handedness, GameObject>(0);
 
         public override MixedRealityInteractionMapping[] DefaultLeftHandedInteractions => new[]
         {
             // Controller Pose
-            new MixedRealityInteractionMapping(0, "Spatial Pointer", AxisType.SixDof, DeviceInputType.SpatialPointer),
+            new MixedRealityInteractionMapping(0, "Spatial Pointer", AxisType.SixDof, DeviceInputType.SpatialPointer, MixedRealityInputAction.None),
             // HTC Vive Controller - Left Controller Trigger (7) Squeeze
             // Oculus Touch Controller - Axis1D.PrimaryIndexTrigger Squeeze
             // Valve Knuckles Controller - Left Controller Trigger Squeeze
@@ -88,13 +82,13 @@ namespace Microsoft.MixedReality.Toolkit.OpenVR.Input
             new MixedRealityInteractionMapping(9, "Unity Button Id 3", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton3),
             new MixedRealityInteractionMapping(10, "WMR Touchpad Touch", AxisType.Digital, DeviceInputType.TouchpadTouch, KeyCode.JoystickButton18),
             new MixedRealityInteractionMapping(11, "WMR Touchpad Position", AxisType.DualAxis, DeviceInputType.Touchpad, ControllerMappingLibrary.AXIS_17, ControllerMappingLibrary.AXIS_18),
-            new MixedRealityInteractionMapping(12, "Spatial Grip", AxisType.SixDof, DeviceInputType.SpatialGrip),
+            new MixedRealityInteractionMapping(12, "Spatial Grip", AxisType.SixDof, DeviceInputType.SpatialGrip, MixedRealityInputAction.None),
         };
 
         public override MixedRealityInteractionMapping[] DefaultRightHandedInteractions => new[]
         {
             // Controller Pose
-            new MixedRealityInteractionMapping(0, "Spatial Pointer", AxisType.SixDof, DeviceInputType.SpatialPointer),
+            new MixedRealityInteractionMapping(0, "Spatial Pointer", AxisType.SixDof, DeviceInputType.SpatialPointer, MixedRealityInputAction.None),
             // HTC Vive Controller - Right Controller Trigger (7) Squeeze
             // Oculus Touch Controller - Axis1D.SecondaryIndexTrigger Squeeze
             // Valve Knuckles Controller - Right Controller Trigger Squeeze
@@ -141,7 +135,7 @@ namespace Microsoft.MixedReality.Toolkit.OpenVR.Input
             new MixedRealityInteractionMapping(9, "Unity Button Id 1", AxisType.Digital, DeviceInputType.ButtonPress, KeyCode.JoystickButton1),
             new MixedRealityInteractionMapping(10, "WMR Touchpad Touch", AxisType.Digital, DeviceInputType.TouchpadTouch, KeyCode.JoystickButton19),
             new MixedRealityInteractionMapping(11, "WMR Touchpad Position", AxisType.DualAxis, DeviceInputType.Touchpad, ControllerMappingLibrary.AXIS_19, ControllerMappingLibrary.AXIS_20),
-            new MixedRealityInteractionMapping(12, "Spatial Grip", AxisType.SixDof, DeviceInputType.SpatialGrip),
+            new MixedRealityInteractionMapping(12, "Spatial Grip", AxisType.SixDof, DeviceInputType.SpatialGrip, MixedRealityInputAction.None),
         };
 
         /// <inheritdoc />
@@ -207,88 +201,24 @@ namespace Microsoft.MixedReality.Toolkit.OpenVR.Input
             // Raise input system events if it is enabled.
             if (lastState != TrackingState)
             {
-                CoreServices.InputSystem?.RaiseSourceTrackingStateChanged(InputSource, this, TrackingState);
+                InputSystem?.RaiseSourceTrackingStateChanged(InputSource, this, TrackingState);
             }
 
             if (TrackingState == TrackingState.Tracked && LastControllerPose != CurrentControllerPose)
             {
                 if (IsPositionAvailable && IsRotationAvailable)
                 {
-                    CoreServices.InputSystem?.RaiseSourcePoseChanged(InputSource, this, CurrentControllerPose);
+                    InputSystem?.RaiseSourcePoseChanged(InputSource, this, CurrentControllerPose);
                 }
                 else if (IsPositionAvailable && !IsRotationAvailable)
                 {
-                    CoreServices.InputSystem?.RaiseSourcePositionChanged(InputSource, this, CurrentControllerPosition);
+                    InputSystem?.RaiseSourcePositionChanged(InputSource, this, CurrentControllerPosition);
                 }
                 else if (!IsPositionAvailable && IsRotationAvailable)
                 {
-                    CoreServices.InputSystem?.RaiseSourceRotationChanged(InputSource, this, CurrentControllerRotation);
+                    InputSystem?.RaiseSourceRotationChanged(InputSource, this, CurrentControllerRotation);
                 }
             }
         }
-
-        #region Controller model functions
-
-        /// <inheritdoc />
-        protected override bool TryRenderControllerModel(Type controllerType, InputSourceType inputSourceType)
-        {
-            MixedRealityControllerVisualizationProfile visualizationProfile = GetControllerVisualizationProfile();
-
-            // Intercept this call if we are using the default driver provided models.
-            if (visualizationProfile == null ||
-                !visualizationProfile.GetUseDefaultModelsOverride(GetType(), ControllerHandedness))
-            {
-                return base.TryRenderControllerModel(controllerType, inputSourceType);
-            }
-            else if (controllerDictionary.TryGetValue(ControllerHandedness, out GameObject controllerModel))
-            {
-                TryAddControllerModelToSceneHierarchy(controllerModel);
-                controllerModel.SetActive(true);
-                return true;
-            }
-
-            Debug.Log("Trying to load controller model from platform SDK");
-
-            GameObject controllerModelGameObject = new GameObject($"{ControllerHandedness} OpenVR Controller");
-
-            bool failedToObtainControllerModel;
-
-            var visualizationType = visualizationProfile.GetControllerVisualizationTypeOverride(GetType(), ControllerHandedness);
-            if (visualizationType != null)
-            {
-                // Set the platform controller model to not be destroyed when the source is lost. It'll be disabled instead,
-                // and re-enabled when the same controller is re-detected.
-                if (controllerModelGameObject.AddComponent(visualizationType.Type) is IMixedRealityControllerPoseSynchronizer visualizer)
-                {
-                    visualizer.DestroyOnSourceLost = false;
-                }
-
-                OpenVRRenderModel openVRRenderModel = controllerModelGameObject.AddComponent<OpenVRRenderModel>();
-                openVRRenderModel.shader = visualizationProfile.GetDefaultControllerModelMaterialOverride(GetType(), ControllerHandedness).shader;
-                failedToObtainControllerModel = !openVRRenderModel.LoadModel(ControllerHandedness);
-
-                if (!failedToObtainControllerModel)
-                {
-                    TryAddControllerModelToSceneHierarchy(controllerModelGameObject);
-                    controllerDictionary.Add(ControllerHandedness, controllerModelGameObject);
-                }
-            }
-            else
-            {
-                Debug.LogError("Controller visualization type not defined for controller visualization profile");
-                failedToObtainControllerModel = true;
-            }
-
-            if (failedToObtainControllerModel)
-            {
-                Debug.LogWarning("Failed to create controller model from driver, defaulting to BaseController behavior");
-                UnityEngine.Object.Destroy(controllerModelGameObject);
-                return base.TryRenderControllerModel(GetType(), InputSourceType.Controller);
-            }
-
-            return true;
-        }
-
-        #endregion Controller model functions
     }
 }

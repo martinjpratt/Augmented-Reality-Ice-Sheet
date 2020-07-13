@@ -9,7 +9,6 @@ using UnityEngine;
 
 namespace Microsoft.MixedReality.Toolkit.Teleport
 {
-    [AddComponentMenu("Scripts/MRTK/SDK/TeleportCursor")]
     public class TeleportCursor : AnimatedCursor, IMixedRealityTeleportHandler
     {
         [SerializeField]
@@ -86,9 +85,9 @@ namespace Microsoft.MixedReality.Toolkit.Teleport
 
             FocusDetails focusDetails;
 
-            if (!CoreServices.InputSystem.FocusProvider.TryGetFocusDetails(Pointer, out focusDetails))
+            if (!InputSystem.FocusProvider.TryGetFocusDetails(Pointer, out focusDetails))
             {
-                if (CoreServices.InputSystem.FocusProvider.IsPointerRegistered(Pointer))
+                if (InputSystem.FocusProvider.IsPointerRegistered(Pointer))
                 {
                     Debug.LogError($"{gameObject.name}: Unable to get focus details for {pointer.GetType().Name}!");
                 }

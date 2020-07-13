@@ -4,6 +4,7 @@
 using Microsoft.MixedReality.Toolkit.UI;
 using System;
 using System.Collections.Generic;
+using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 
@@ -13,7 +14,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// This component handles the speech input events raised form the <see cref="IMixedRealityInputSystem"/>.
     /// </summary>
     [DisallowMultipleComponent]
-    [AddComponentMenu("Scripts/MRTK/SDK/SpeechInputHandler")]
     public class SpeechInputHandler : BaseInputHandler, IMixedRealitySpeechHandler
     {
         /// <summary>
@@ -23,7 +23,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         [SerializeField]
         [Tooltip("The keywords to be recognized and optional keyboard shortcuts.")]
-        private KeywordAndResponse[] keywords = Array.Empty<KeywordAndResponse>();
+        private KeywordAndResponse[] keywords = new KeywordAndResponse[0];
 
         [SerializeField]
         [Tooltip("Keywords are persistent across all scenes.  This Speech Input Handler instance will not be destroyed when loading a new scene.")]
@@ -83,12 +83,12 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         protected override void RegisterHandlers()
         {
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealitySpeechHandler>(this);
+            InputSystem?.RegisterHandler<IMixedRealitySpeechHandler>(this);
         }
 
         protected override void UnregisterHandlers()
         {
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealitySpeechHandler>(this);
+            InputSystem?.UnregisterHandler<IMixedRealitySpeechHandler>(this);
         }
 
         #endregion InputSystemGlobalHandlerListener Implementation

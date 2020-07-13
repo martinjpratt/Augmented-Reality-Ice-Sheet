@@ -10,7 +10,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.Boundary
     /// <summary>
     /// Service manager supporting running the boundary system, without requiring the MixedRealityToolkit object.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/BoundarySystemManager")]
     public class BoundarySystemManager : BaseServiceManager
     {
         [SerializeField]
@@ -43,9 +42,10 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.Boundary
         private void InitializeManager()
         {
             // The boundary system class takes arguments for:
+            // * The registrar
             // * The boundary visualization profile
             // * The desired experience scale
-            object[] args = { profile, experienceScale };
+            object[] args = { this, profile, experienceScale };
 
             Initialize<IMixedRealityBoundarySystem>(BoundarySystemType.Type, args: args);
         }

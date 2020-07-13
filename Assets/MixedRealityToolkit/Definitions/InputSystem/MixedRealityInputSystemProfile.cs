@@ -20,11 +20,8 @@ namespace Microsoft.MixedReality.Toolkit.Input
     public class MixedRealityInputSystemProfile : BaseMixedRealityProfile
     {
         [SerializeField]
-        private MixedRealityInputDataProviderConfiguration[] dataProviderConfigurations = System.Array.Empty<MixedRealityInputDataProviderConfiguration>();
+        private MixedRealityInputDataProviderConfiguration[] dataProviderConfigurations = new MixedRealityInputDataProviderConfiguration[0];
 
-        /// <summary>
-        /// List of input data provider configurations to initialize and manage by the Input System registrar
-        /// </summary>
         public MixedRealityInputDataProviderConfiguration[] DataProviderConfigurations
         {
             get { return dataProviderConfigurations; }

@@ -8,12 +8,8 @@ public class MouseIceSheetCollision : MonoBehaviour
 {
 
     public int nearestVertexIndex;
-    public float accumualtionIncrement = 4e-06f;
-#if UNITY_WSA
+    public float accumualtionIncrement;
     public PinchSlider UISlider;
-#elif UNITY_IOS || UNITY_ANDROID
-    public Slider UISlider;
-#endif
     float baseAccumulationIncrement;
     RaycastHit hit;
     Ray ray;
@@ -32,15 +28,18 @@ public class MouseIceSheetCollision : MonoBehaviour
 
     public void sliderChangeMB()
     {
-        accumualtionIncrement = baseAccumulationIncrement * ((UISlider.value * 2) - 1);
+        accumualtionIncrement = baseAccumulationIncrement * ((UISlider.SliderValue * 2) - 1);
         
     }
 
     // Update is called once per frame
     void Update()
     {
+        
+
         if (this.GetComponent<Build3DSheet>().runModel)
         {
+            
             int layerMask = 1 << 4;
             RaycastHit hit;
             if (Physics.Raycast(CloudSun.transform.position, transform.TransformDirection(Vector3.down), out hit, Mathf.Infinity, layerMask))
@@ -103,8 +102,8 @@ public class MouseIceSheetCollision : MonoBehaviour
                 {
                     this.GetComponent<Build3DSheet>().Mnew[xVal - 1, yVal + 1] = accumualtionIncrement;
                 }
-
-
+                
+                
             }
 
         }

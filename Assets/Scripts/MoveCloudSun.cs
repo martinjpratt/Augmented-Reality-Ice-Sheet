@@ -6,11 +6,7 @@ using UnityEngine.UI;
 
 public class MoveCloudSun : MonoBehaviour {
 
-#if UNITY_WSA
     public PinchSlider UISlider;
-#elif UNITY_IOS || UNITY_ANDROID
-    public Slider UISlider;
-#endif
     public bool IsSun = false;
     public GameObject SunObject;
     public GameObject CloudObject;
@@ -26,7 +22,7 @@ public class MoveCloudSun : MonoBehaviour {
 
         if (this.GetComponent<Build3DSheet>().runModel)
         {
-            if (UISlider.value >= 0.5f)
+            if (UISlider.SliderValue >= 0.5f)
             {
                 IsSun = false;
                 SunObject.SetActive(false);

@@ -87,7 +87,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             foreach (var pointer in CoreServices.InputSystem.FocusProvider.GetPointers<T>())
             {
-                if (pointer.Controller?.ControllerHandedness.IsMatch(handedness) == true)
+                if ((pointer.Controller?.ControllerHandedness & handedness) != 0)
                 {
                     return pointer;
                 }
@@ -106,7 +106,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             foreach (var pointer in GetPointers())
             {
                 if (pointer is T pointerConcrete
-                    && pointer.Controller?.ControllerHandedness.IsMatch(handedness) == true)
+                    && (pointer.Controller?.ControllerHandedness & handedness) != 0)
                 {
                     yield return pointerConcrete;
                 }
@@ -123,7 +123,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         {
             foreach (var pointer in GetPointers<T>(handedness))
             {
-                if (pointer.Controller?.ControllerHandedness.IsMatch(handedness) == true
+                if ((pointer.Controller?.ControllerHandedness & handedness) != 0
                     && pointer.InputSourceParent.SourceType == sourceType)
                 {
                     yield return pointer;

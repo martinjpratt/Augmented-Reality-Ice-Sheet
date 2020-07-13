@@ -29,6 +29,23 @@ namespace Microsoft.MixedReality.Toolkit.Input
             Enabled = true;
         }
 
+        private IMixedRealityInputSystem inputSystem = null;
+
+        /// <summary>
+        /// The active instance of the input system.
+        /// </summary>
+        protected IMixedRealityInputSystem InputSystem
+        {
+            get
+            {
+                if (inputSystem == null)
+                {
+                    MixedRealityServiceRegistry.TryGetService<IMixedRealityInputSystem>(out inputSystem);
+                }
+                return inputSystem;
+            }
+        }
+
         /// <summary>
         /// The default interactions for this controller.
         /// </summary>
@@ -76,32 +93,21 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         public Vector3 Velocity { get; protected set; }
 
-        /// <inheritdoc />
         public virtual bool IsInPointingPose => true;
 
         #endregion IMixedRealityController Implementation
 
         /// <summary>
-        /// Sets up the configuration based on the Mixed Reality Controller Mapping Profile.
+        /// Setups up the configuration based on the Mixed Reality Controller Mapping Profile.
         /// </summary>
-        [Obsolete("The second parameter is no longer used. This method now reads from the controller's input source.")]
         public bool SetupConfiguration(Type controllerType, InputSourceType inputSourceType = InputSourceType.Controller)
-        {
-            return SetupConfiguration(controllerType);
-        }
-
-        /// <summary>
-        /// Sets up the configuration based on the Mixed Reality Controller Mapping Profile.
-        /// </summary>
-        /// <param name="controllerType">The type this controller represents.</param>
-        public bool SetupConfiguration(Type controllerType)
         {
             if (IsControllerMappingEnabled())
             {
                 if (GetControllerVisualizationProfile() != null &&
                     GetControllerVisualizationProfile().RenderMotionControllers)
                 {
-                    TryRenderControllerModel(controllerType, InputSource.SourceType);
+                    TryRenderControllerModel(controllerType, inputSourceType);
                 }
 
                 // We can only enable controller profiles if mappings exist.
@@ -161,7 +167,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         }
 
         /// <summary>
-        /// Assign the default interactions based on controller handedness, if necessary. 
+        /// Assign the default interactions based on controller handedness if necessary. 
         /// </summary>
         public abstract void SetupDefaultInteractions(Handedness controllerHandedness);
 
@@ -174,12 +180,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
             Interactions = mappings;
         }
 
-        /// <summary>
-        /// Try to render a controller model for this controller from the visualization profile.
-        /// </summary>
-        /// <param name="controllerType">The type of controller to load the model for.</param>
-        /// <param name="inputSourceType">Whether the model represents a hand or a controller.</param>
-        /// <returns>True if a model was successfully loaded or model rendering is disabled. False if a model tried to load but failed.</returns>
         protected virtual bool TryRenderControllerModel(Type controllerType, InputSourceType inputSourceType)
         {
             GameObject controllerModel = null;
@@ -216,6 +216,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                         controllerModel = GetControllerVisualizationProfile().GlobalRightHandModel;
                     }
                 }
+
                 else if (inputSourceType == InputSourceType.Hand)
                 {
                     if (ControllerHandedness == Handedness.Left &&
@@ -269,34 +270,31 @@ namespace Microsoft.MixedReality.Toolkit.Input
         }
 
         #region MRTK instance helpers
-
-        protected static MixedRealityControllerVisualizationProfile GetControllerVisualizationProfile()
+        protected MixedRealityControllerVisualizationProfile GetControllerVisualizationProfile()
         {
-            if (CoreServices.InputSystem?.InputSystemProfile != null)
+            if (InputSystem?.InputSystemProfile != null)
             {
-                return CoreServices.InputSystem.InputSystemProfile.ControllerVisualizationProfile;
+                return InputSystem.InputSystemProfile.ControllerVisualizationProfile;
             }
 
             return null;
         }
 
-        protected static bool IsControllerMappingEnabled()
+        protected bool IsControllerMappingEnabled()
         {
-            if (CoreServices.InputSystem?.InputSystemProfile != null)
+            if (InputSystem?.InputSystemProfile != null)
             {
-                return CoreServices.InputSystem.InputSystemProfile.IsControllerMappingEnabled;
+                return InputSystem.InputSystemProfile.IsControllerMappingEnabled;
             }
 
             return false;
         }
 
-        protected static MixedRealityControllerMapping[] GetControllerMappings()
+        protected MixedRealityControllerMapping[] GetControllerMappings()
         {
-            if (CoreServices.InputSystem?.InputSystemProfile != null &&
-                CoreServices.InputSystem.InputSystemProfile.ControllerMappingProfile != null)
+            if (InputSystem?.InputSystemProfile?.ControllerMappingProfile != null)
             {
-                // We can only enable controller profiles if mappings exist.
-                return CoreServices.InputSystem.InputSystemProfile.ControllerMappingProfile.MixedRealityControllerMappings;
+                return InputSystem.InputSystemProfile.ControllerMappingProfile.MixedRealityControllerMappings;
             }
 
             return null;

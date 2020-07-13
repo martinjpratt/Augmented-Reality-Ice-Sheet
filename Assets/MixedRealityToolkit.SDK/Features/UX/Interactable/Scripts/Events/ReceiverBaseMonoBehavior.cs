@@ -12,11 +12,10 @@ namespace Microsoft.MixedReality.Toolkit.UI
     /// 
     /// InteractableReceiver or InteractableReceiverList can be used with ReceiverBase - built-in receivers
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/ReceiverBaseMonoBehavior")]
     public class ReceiverBaseMonoBehavior : MonoBehaviour, IInteractableHandler
     {
         /// <summary>
-        /// Types of directions to search for Interactable component in transform hierarchy
+        /// Types of directions to search for Interactable component in transform heirachy
         /// </summary>
         public enum SearchScopes { Self, Parent, Children };
 
@@ -26,7 +25,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
         public Interactable Interactable;
 
         /// <summary>
-        /// directions to search for Interactable component in transform hierarchy if none assigned
+        /// directions to search for Interactable component in transform heirachy if none assigned
         /// </summary>
         public SearchScopes InteractableSearchScope;
 

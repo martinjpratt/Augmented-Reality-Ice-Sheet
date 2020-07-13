@@ -1,6 +1,8 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Microsoft.MixedReality.Toolkit.Input;
+using Microsoft.MixedReality.Toolkit.Utilities;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.Toolkit.Diagnostics
@@ -8,22 +10,35 @@ namespace Microsoft.MixedReality.Toolkit.Diagnostics
     /// <summary>
     /// Class that exposes methods to show/hide the visual profiler
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/Services/VisualProfilerControl")]
     public class VisualProfilerControl : MonoBehaviour
     {
+        private IMixedRealityDiagnosticsSystem diagnosticsSystem = null;
+
+        private IMixedRealityDiagnosticsSystem DiagnosticsSystem
+        {
+            get
+            {
+                if (diagnosticsSystem == null)
+                {
+                    MixedRealityServiceRegistry.TryGetService<IMixedRealityDiagnosticsSystem>(out diagnosticsSystem);
+                }
+                return diagnosticsSystem;
+            }
+        }
+
         public void ToggleProfiler()
         {
-            if (CoreServices.DiagnosticsSystem != null)
+            if (DiagnosticsSystem != null)
             {
-                CoreServices.DiagnosticsSystem.ShowProfiler = !CoreServices.DiagnosticsSystem.ShowProfiler;
+                DiagnosticsSystem.ShowProfiler = !DiagnosticsSystem.ShowProfiler;
             }
         }
 
         public void SetProfilerVisibility(bool isVisible)
         {
-            if (CoreServices.DiagnosticsSystem != null)
+            if (DiagnosticsSystem != null)
             {
-                CoreServices.DiagnosticsSystem.ShowProfiler = isVisible;
+                DiagnosticsSystem.ShowProfiler = isVisible;
             }
         }
     }

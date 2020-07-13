@@ -3,8 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using Accord.Math;
 
-public class Build3DBed : MonoBehaviour
-{
+public class Build3DBed : MonoBehaviour {
 
     public TextAsset AntarcticBed;
     public double[,] modifiedBed;
@@ -13,6 +12,7 @@ public class Build3DBed : MonoBehaviour
     public float J = 40;
     public float L = 1200e3f;
     public bool buildBed = false;
+
 
 
     List<UnityEngine.Vector3> vertexBuffer;
@@ -28,27 +28,23 @@ public class Build3DBed : MonoBehaviour
     MeshFilter sideMeshFilter;
     Camera camera;
 
-
     // Use this for initialization
-    void Start()
-    {
+    void Start () {
         meshCollider = this.GetComponent<MeshCollider>();
         meshFilter = this.GetComponent<MeshFilter>();
         sideMeshFilter = sideMesh.GetComponent<MeshFilter>();
         vertexBuffer = new List<UnityEngine.Vector3>((xSize + 1) * (zSize + 1));
         sideVertexBuffer = new List<UnityEngine.Vector3>(41 * 4 * 2);
         triangles = new int[xSize * zSize * 6];
-        sideTriangles = new int[40 * 4 * 1 * 6];
+        sideTriangles = new int[40 * 4 * 4 * 6];
         uv = new Vector2[41 * 41];
 
-
         GetComponent<Renderer>().material.renderQueue = 2001;
-        //GetComponent<Renderer>().material.;
-
 
         InitiateBed();
 
         camera = Camera.main;
+        
     }
 
     public void InitiateBed()
@@ -68,6 +64,8 @@ public class Build3DBed : MonoBehaviour
 
         initSideTriangles();
         GenerateSides(bed);
+
+        this.GetComponent<RaycastDeformer>().arBed = false;
     }
 
     public void InitiateAntacticBed()
@@ -92,6 +90,7 @@ public class Build3DBed : MonoBehaviour
         }
 
         initTriangles();
+        Generate(modifiedBed);
 
         initSideTriangles();
         Generate(modifiedBed);
@@ -111,7 +110,6 @@ public class Build3DBed : MonoBehaviour
                 triangles[ti + 5] = vi + xSize + 2;
             }
         }
-
     }
 
     private void initSideTriangles()
@@ -126,7 +124,6 @@ public class Build3DBed : MonoBehaviour
                 sideTriangles[ti + 5] = vi + 160 + 2;
             }
         }
-
     }
 
 
@@ -137,11 +134,10 @@ public class Build3DBed : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
-                vertexBuffer.Add(new UnityEngine.Vector3(x, (float)b[x, y], y));
+                vertexBuffer.Add(new UnityEngine.Vector3(x, (float)b[x,y], y));
                 uv[i] = new Vector2((float)x / 10, (float)y / 10);
             }
         }
-
         Mesh mesh = GetComponent<MeshFilter>().mesh;
         mesh.Clear();
         mesh.SetVertices(vertexBuffer);
@@ -150,12 +146,10 @@ public class Build3DBed : MonoBehaviour
 
         mesh.RecalculateNormals();
         mesh.RecalculateBounds();
+
         meshFilter.sharedMesh = mesh;
         meshCollider.sharedMesh = mesh;
     }
-
-
-
 
     public void GenerateSides(double[,] b)
     {
@@ -183,7 +177,7 @@ public class Build3DBed : MonoBehaviour
 
         for (int x = 0; x <= 40; x++)
         {
-            sideVertexBuffer.Add(new UnityEngine.Vector3(x, (float)b[x, 0], 0));
+            sideVertexBuffer.Add(new UnityEngine.Vector3(x, (float)b[x,0], 0));
         }
 
         for (int x = 1; x <= 40; x++)
@@ -201,7 +195,6 @@ public class Build3DBed : MonoBehaviour
             sideVertexBuffer.Add(new UnityEngine.Vector3(0, (float)b[0, x], x));
         }
 
-        //print(sideVertexBuffer.Count);
         Mesh smesh = new Mesh();
         smesh.name = "Bed Panels Mesh";
         smesh.Clear();
@@ -212,10 +205,9 @@ public class Build3DBed : MonoBehaviour
         smesh.RecalculateBounds();
         sideMeshFilter.sharedMesh = smesh;
     }
-
-
-    // Update is called once per frame
-    void Update () {
+	
+	// Update is called once per frame
+	void Update () {
         if (buildBed)
         {
             bed = bed.Add(modifiedBed);

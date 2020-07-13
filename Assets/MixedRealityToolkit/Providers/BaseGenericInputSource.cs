@@ -18,11 +18,28 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// </summary>
         public BaseGenericInputSource(string name, IMixedRealityPointer[] pointers = null, InputSourceType sourceType = InputSourceType.Other)
         {
-            SourceId = (CoreServices.InputSystem != null) ? CoreServices.InputSystem.GenerateNewSourceId() : 0;
+            SourceId = (InputSystem != null) ? InputSystem.GenerateNewSourceId() : 0;
             SourceName = name;
-            Pointers = pointers ?? new[] { CoreServices.InputSystem?.GazeProvider?.GazePointer };
+            Pointers = pointers ?? new[] { InputSystem?.GazeProvider?.GazePointer };
 
             SourceType = sourceType;
+        }
+
+        private IMixedRealityInputSystem inputSystem = null;
+
+        /// <summary>
+        /// The active instance of the input system.
+        /// </summary>
+        protected IMixedRealityInputSystem InputSystem
+        {
+            get
+            {
+                if (inputSystem == null)
+                {
+                    MixedRealityServiceRegistry.TryGetService<IMixedRealityInputSystem>(out inputSystem);
+                }
+                return inputSystem;
+            }
         }
 
         /// <inheritdoc />

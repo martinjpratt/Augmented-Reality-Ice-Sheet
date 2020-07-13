@@ -1,7 +1,6 @@
 // Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
-using Microsoft.MixedReality.Toolkit.Input;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.Toolkit.UI
@@ -12,14 +11,9 @@ namespace Microsoft.MixedReality.Toolkit.UI
     public class ManipulationEventData
     {
         /// <summary>
-        /// The object being manipulated
+        /// Source of ManipulationEvent.
         /// </summary>
-        public GameObject ManipulationSource { get; set; }
-
-        /// <summary>
-        /// The pointer manipulating the object or hovering over the object. Will be null for OnManipulationEnded.
-        /// </summary>
-        public IMixedRealityPointer Pointer { get; set; }
+        public ManipulationHandler ManipulationSource { get; set; }
 
         /// <summary>
         /// Whether the Manipulation is a NearInteration or not.

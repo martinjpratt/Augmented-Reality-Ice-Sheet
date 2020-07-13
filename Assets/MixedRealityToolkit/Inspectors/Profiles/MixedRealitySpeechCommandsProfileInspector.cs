@@ -27,8 +27,8 @@ namespace Microsoft.MixedReality.Toolkit.Editor
 
         private static bool showSpeechCommands = true;
         private SerializedProperty speechCommands;
-        private static GUIContent[] actionLabels = System.Array.Empty<GUIContent>();
-        private static int[] actionIds = System.Array.Empty<int>();
+        private static GUIContent[] actionLabels = new GUIContent[0];
+        private static int[] actionIds = new int[0];
         private bool isInitialized = false;
 
         protected override void OnEnable()
@@ -60,14 +60,11 @@ namespace Microsoft.MixedReality.Toolkit.Editor
 
         public override void OnInspectorGUI()
         {
-            if (!RenderProfileHeader(ProfileTitle, ProfileDescription, target, isInitialized, BackProfileType.Input))
-            {
-                return;
-            }
+            RenderProfileHeader(ProfileTitle, ProfileDescription, target, isInitialized, BackProfileType.Input);
 
             CheckMixedRealityInputActions();
 
-            using (new EditorGUI.DisabledGroupScope(IsProfileLock((BaseMixedRealityProfile)target)))
+            using (new GUIEnabledWrapper(!IsProfileLock((BaseMixedRealityProfile)target)))
             {
                 serializedObject.Update();
 
@@ -103,7 +100,7 @@ namespace Microsoft.MixedReality.Toolkit.Editor
         private void RenderList(SerializedProperty list)
         {
             // Disable speech commands if we could not initialize successfully
-            using (new EditorGUI.DisabledGroupScope(!isInitialized))
+            using (new GUIEnabledWrapper(isInitialized, false))
             {
                 EditorGUILayout.Space();
                 using (new EditorGUILayout.VerticalScope())

@@ -10,7 +10,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.Diagnostics
     /// <summary>
     /// Service manager supporting running the diagnostics system without requiring the MixedRealityToolkit object.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/DiagnosticsSystemManager")]
     public class DiagnosticsSystemManager : BaseServiceManager
     {
         [SerializeField]
@@ -39,8 +38,9 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.Diagnostics
         private void InitializeManager()
         {
             // The Diagnostics system class takes arguments for:
+            // * The registrar
             // * The diagnostics system profile
-            object[] args = { profile };
+            object[] args = { this, profile };
 
             Initialize<IMixedRealityDiagnosticsSystem>(DiagnosticsSystemType.Type, args: args);
         }

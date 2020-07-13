@@ -3,6 +3,7 @@
 
 using Microsoft.MixedReality.Toolkit.Utilities;
 using UnityEngine;
+using UnityBoundary = UnityEngine.Experimental.XR.Boundary;
 
 namespace Microsoft.MixedReality.Toolkit.Boundary
 {
@@ -109,10 +110,10 @@ namespace Microsoft.MixedReality.Toolkit.Boundary
         /// <returns>True if the location is within the specified area of the boundary space.</returns>
         /// <remarks>
         /// Use:
-        /// BoundaryType.PlayArea for the inscribed volume
-        /// BoundaryType.TrackedArea for the area defined by the boundary edges.
+        /// Boundary.Type.PlayArea for the inscribed volume
+        /// Boundary.Type.TrackedArea for the area defined by the boundary edges.
         /// </remarks>
-        bool Contains(Vector3 location, BoundaryType boundaryType = BoundaryType.TrackedArea);
+        bool Contains(Vector3 location, UnityBoundary.Type boundaryType = UnityBoundary.Type.TrackedArea);
 
         /// <summary>
         /// Returns the description of the inscribed rectangular bounds.

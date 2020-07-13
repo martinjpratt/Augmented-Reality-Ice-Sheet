@@ -5,16 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/MixedRealityToolkit.SDK/StandardAssets/Scenes/DefaultManagerScene.unity
-    guid: ae7bb08d297fb69408695d8de0962524
-  - enabled: 0
-    path: Assets/Scenes/UILoader.unity
-    guid: e9ab2d1c8bff4472988067acd1bec680
-  - enabled: 0
-    path: Assets/Scenes/ImageryBrowser.unity
-    guid: e47fb077caff84dedaea5f12c3e709dc
   - enabled: 1
-    path: Assets/Scenes/MassBalance.unity
-    guid: 9fc0d4010bbf28b4594072e72b8655ab
+    path: Assets/Scenes/ARIceSheet3D.unity
+    guid: 868cbc1a0fb713f45806345e1b563a8d
   m_configObjects: {}

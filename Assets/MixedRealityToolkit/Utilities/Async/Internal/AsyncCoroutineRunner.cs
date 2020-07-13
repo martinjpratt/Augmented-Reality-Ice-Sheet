@@ -38,7 +38,6 @@ namespace Microsoft.MixedReality.Toolkit.Utilities
     /// it will persist instead of being destroyed). The runner will force itself to
     /// the root of the scene if it's rooted elsewhere.
     /// </remarks>
-    [AddComponentMenu("Scripts/MRTK/Core/AsyncCoroutineRunner")]
     internal sealed class AsyncCoroutineRunner : MonoBehaviour
     {
         private static AsyncCoroutineRunner instance;
@@ -94,10 +93,7 @@ namespace Microsoft.MixedReality.Toolkit.Utilities
                     instance.transform.parent = null;
                 }
 
-#if !UNITY_EDITOR
                 DontDestroyOnLoad(instance);
-#endif
-
                 return instance;
             }
         }

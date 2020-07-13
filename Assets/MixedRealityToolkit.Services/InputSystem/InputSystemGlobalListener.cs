@@ -13,17 +13,33 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// </summary>
     [Obsolete("InputSystemGlobalListener uses obsolete global input event registration API. " +
         "Use RegisterHandler/UnregisterHandler API directly (preferred) or InputSystemGlobalHandlerListener instead.")]
-    [AddComponentMenu("Scripts/MRTK/Obsolete/InputSystemGlobalListener")]
     public class InputSystemGlobalListener : MonoBehaviour
     {
         private bool lateInitialize = true;
 
+        private IMixedRealityInputSystem inputSystem = null;
+
+        /// <summary>
+        /// The active instance of the input system.
+        /// </summary>
+        protected IMixedRealityInputSystem InputSystem
+        {
+            get
+            {
+                if (inputSystem == null)
+                {
+                    MixedRealityServiceRegistry.TryGetService<IMixedRealityInputSystem>(out inputSystem);
+                }
+                return inputSystem;
+            }
+        }
+
         protected virtual void OnEnable()
         {
-            if (CoreServices.InputSystem != null && !lateInitialize)
+            if (InputSystem != null && !lateInitialize)
             {
             #pragma warning disable 0618
-                CoreServices.InputSystem.Register(gameObject);
+                InputSystem.Register(gameObject);
             #pragma warning restore 0618
             }
         }
@@ -42,7 +58,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
                 lateInitialize = false;
             #pragma warning disable 0618
-                CoreServices.InputSystem.Register(gameObject);
+                InputSystem.Register(gameObject);
             #pragma warning restore 0618
             }
         }
@@ -50,7 +66,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         protected virtual void OnDisable()
         {
         #pragma warning disable 0618
-            CoreServices.InputSystem?.Unregister(gameObject);
+            InputSystem?.Unregister(gameObject);
         #pragma warning restore 0618
         }
 
@@ -63,9 +79,9 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// </remarks>
         protected async Task EnsureInputSystemValid()
         {
-            if (CoreServices.InputSystem == null)
+            if (InputSystem == null)
             {
-                await new WaitUntil(() => CoreServices.InputSystem != null);
+                await new WaitUntil(() => InputSystem != null);
             }
         }
     }

@@ -66,7 +66,7 @@ namespace Microsoft.MixedReality.Toolkit.UI
                 return States.StateList.ToArray();
             }
 
-            return Array.Empty<State>();
+            return new State[0];
         }
 
         /// <summary>

@@ -58,23 +58,18 @@ namespace Microsoft.MixedReality.Toolkit.UI
         {
             ThemePropertyValue start = new ThemePropertyValue();
 
-            if (renderer != null)
-            {
-                material = renderer.material;
-                start.Material = material;
-            }
-
+            material = renderer.material;
+            start.Material = material;
             return start;
         }
 
         /// <inheritdoc />
         public override void SetValue(ThemeStateProperty property, int index, float percentage)
         {
-            if (renderer != null)
-            {
-                material = property.Values[index].Material;
-                renderer.material = material;
-            }
+            Host.SetActive(property.Values[index].Bool);
+
+            material = property.Values[index].Material;
+            renderer.material = material;
         }
     }
 }

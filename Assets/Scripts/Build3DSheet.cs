@@ -24,11 +24,12 @@ public class Build3DSheet : MonoBehaviour
     public bool runModel = false;
     public float gammaDenumerator = 5;
     public float dt0Mulitplier = 0.25f;
-    public TextMeshProUGUI timeDisplay;
+    public TextMeshPro timeDisplay;
     public GameObject modelUIobject;
     public Color minColor;
     public Color maxColor;
-    public UIMassBalanceManager uiMassBalanceManger;
+    public UIManager uiManager;
+
 
 
     //Private variables, mostly to allocate memory
@@ -77,26 +78,13 @@ public class Build3DSheet : MonoBehaviour
     //UI Section
     public void selectRunModel()
     {
-        if (!runModel)
-        {
-            runModel = true;
-            uiMassBalanceManger.HideSurfaceControls();
-            uiMassBalanceManger.playImage.sprite = uiMassBalanceManger.pauseSprite;
-        }
-        else
-        {
-            runModel = false;
-            Resources.UnloadUnusedAssets();
-            uiMassBalanceManger.ShowSurfaceControls();
-            uiMassBalanceManger.playImage.sprite = uiMassBalanceManger.playSprite;
-        }
+        runModel = true;
     }
 
     public void deselectRunModel()
     {
         runModel = false;
         Resources.UnloadUnusedAssets();
-        uiMassBalanceManger.ShowSurfaceControls();
     }
 
 
@@ -115,7 +103,7 @@ public class Build3DSheet : MonoBehaviour
         GetComponent<Renderer>().material.renderQueue = 2000;
         //InitiateModel();
     }
-
+    
 
     //This creates a generic surface using the halfar method (like in the Matlab version)
     public void InitiateModel()
@@ -131,7 +119,7 @@ public class Build3DSheet : MonoBehaviour
             x_temp[i] = -L + (i * dx);
             y_temp[i] = -L + (i * dx);
         }
-        Tuple<float[,], float[,]> M = Matrix.MeshGrid(x_temp, y_temp);
+        Tuple<float[,],float[,]> M = Matrix.MeshGrid(x_temp, y_temp);
 
         double[,] H1 = halfar(t1 * secpera, M.Item1, M.Item2);    //Line 10 in RunSIAGeneral.m
 
@@ -147,9 +135,10 @@ public class Build3DSheet : MonoBehaviour
         Hinit = Elementwise.Multiply(H1, 0.5f);
         a = Matrix.Zeros(41, 41);
         H = null;
-
+        
         modelt = 0;
-        uiMassBalanceManger.ShowModelControls();
+        uiManager.ShowModelControls();
+        //modelUIobject.SetActive(true);
     }
 
 
@@ -162,17 +151,14 @@ public class Build3DSheet : MonoBehaviour
         newBed = bedSurface.bed;
         double[,] H1 = new double[41, 41];
         string[] lineData = AntarcticSurface.text.Split("\n"[0]);
-
         for (int i = 0; i < lineData.Length; i++)
         {
             string[] elementData = lineData[i].Split(","[0]);
             for (int j = 0; j < elementData.Length; j++)
             {
                 H1[i, j] = double.Parse(elementData[j]);
-
             }
         }
-
 
         mesh = new Mesh();
         mesh.name = "Antarctica Ice Sheet Surface";
@@ -186,27 +172,24 @@ public class Build3DSheet : MonoBehaviour
         Hinit = Elementwise.Multiply(H1, 0.5f);
         a = Matrix.Zeros(41, 41);
         H = null;
-
+        
         modelt = 0;
-        uiMassBalanceManger.ShowModelControls();
+        uiManager.ShowModelControls();
+        //modelUIobject.SetActive(true);
     }
-
 
     public void InitiateFlat()
     {
-        //bedSurface.InitiateAntacticBed();
-
         timeDisplay.text = "Time Scale";
         newBed = bedSurface.bed;
         double[,] H1 = new double[41, 41];
 
         mesh = new Mesh();
-        mesh.name = "Antarctica Ice Sheet Surface";
+        mesh.name = "Flat Ice Sheet Surface";
 
         initTriangles();
         initUVs();
 
-        //Build the intial condition
         Generate(H1);
 
         Hinit = Elementwise.Multiply(H1, 0);
@@ -214,12 +197,12 @@ public class Build3DSheet : MonoBehaviour
         H = null;
 
         modelt = 0;
-        uiMassBalanceManger.ShowModelControls();
+        uiManager.ShowModelControls();
     }
 
 
     private void initTriangles()
-    {
+    {       
         for (int ti = 0, vi = 0, y = 0; y < zSize; y++, vi++)
         {
             for (int x = 0; x < xSize; x++, ti += 6, vi++)
@@ -244,7 +227,6 @@ public class Build3DSheet : MonoBehaviour
         }
     }
 
-
     //This makes the surface of the mesh. We do this procedurally so we can create custom surfaces
     private void Generate(double[,] h)
     {
@@ -256,10 +238,9 @@ public class Build3DSheet : MonoBehaviour
         {
             for (int x = 0; x <= xSize; x++, i++)
             {
-                if (h[x, y] < newBed[x, y])
+                if (h[x,y] < 0)
                 {
-                    h[x, y] = newBed[x, y];
-
+                    h[x, y] = 0;
                 }
                 colorArray[i] = Color.Lerp(minColor, maxColor, (float)h[x, y] / maxH);
                 vertexBuffer.Add(new UnityEngine.Vector3(x, (float)h[x, y], y));
@@ -281,7 +262,7 @@ public class Build3DSheet : MonoBehaviour
         meshFilter.sharedMesh = mesh;
         meshCollider.sharedMesh = mesh;
         GCcounter++;
-        if (GCcounter == 200)
+        if (GCcounter==200)
         {
             Resources.UnloadUnusedAssets();
             GCcounter = 0;
@@ -347,9 +328,6 @@ public class Build3DSheet : MonoBehaviour
 
         inside = inside.Divide(tAlpha);
         double[,] H1 = Elementwise.Multiply(H0, inside);
-
-
-
         return H1;
     }
 
@@ -375,7 +353,7 @@ public class Build3DSheet : MonoBehaviour
         double[,] H0 = Hinit;    //Initial thickness
         float deltat = dtyears * secpera;    //major time step
         float tf = 10e4f * secpera;       //final time
-
+        
         double[,] M0 = a;         //mass balance
         float A = 1e-15f / secpera;   //ice softness
 
@@ -423,8 +401,8 @@ public class Build3DSheet : MonoBehaviour
         HTemp2 = HTemp0.Add(HTemp1);
         double[,] Hlt = Elementwise.Multiply(HTemp2, 0.5);  //left
 
-
         double[,] h = H.Add(newBed);   //update surface plus bed. TODO: need to include sea level?
+
 
         //staggered grid values of [grad h]^2 = "alpha^2"
         float denom1 = Mathf.Pow(4 * dx, 2);
@@ -479,7 +457,7 @@ public class Build3DSheet : MonoBehaviour
         a2temp2 = hTemp4.Subtract(hTemp5).Pow(2);
         a2temp2 = a2temp2.Divide(denom3);
         double[,] a2lt = a2temp1.Add(a2temp2);
-
+        
 
         //Mahaffy's staggered grid diffusivity: D = Gamma H (n+2) |grad h|^n-1
         double[,] tempDup = Elementwise.Multiply(Hup.Pow(5), a2up);
@@ -495,7 +473,6 @@ public class Build3DSheet : MonoBehaviour
 
         //Now run the diffusion to produce the next set of grid points
         H = diffusion2(Lx, Ly, J, K, Dup, Ddn, Drt, Dlt, H, deltat, Mnew, newBed);   //Line 84 in siageneral.m
-
 
         Generate(H.Add(newBed));
 
@@ -537,7 +514,7 @@ public class Build3DSheet : MonoBehaviour
         //DmaxArray[0] = Dleft.Cast<double>().Max();
         //maxD = DmaxArray.Cast<double>().Max();
 
-
+        
         for (int m = 0; m < 39; m++)
         {
 
@@ -580,31 +557,26 @@ public class Build3DSheet : MonoBehaviour
         {
             maxD = maxDlt;
         }
-
+        
 
         if (maxD <= 0.0f)  //e/g/ happens with zero thickness ice sheets
         {
             dt = tf - t;
         }
         else
-        {
-            double dt0 = dt0Mulitplier * (Mathf.Pow(dx, 2) / maxD);
+        {   
+            double  dt0 = dt0Mulitplier * (Mathf.Pow(dx, 2) / maxD);
             dt = Math.Min(dt0, tf - t);   //do not go past tf. Not sure why?
         }
 
         double mu_x = dt / (dx * dx);
         double mu_y = dt / (dy * dy);
-
-
-        double[,] Tb = T.Add(b);
-        //print("Tb: " + Tb[20, 20] + " b: " + b[20, 20] + " T: " + T[20,20]);
+        double [,]Tb = T.Add(b);
 
         double[,] d1 = Elementwise.Multiply(mu_y, Dup);
         double[,] d2 = Elementwise.Multiply(mu_y, Ddown);
         double[,] d3 = Elementwise.Multiply(mu_x, Dright);
         double[,] d4 = Elementwise.Multiply(mu_x, Dleft);
-
-
 
         for (int i = 1; i < J; i++)
         {
@@ -618,14 +590,9 @@ public class Build3DSheet : MonoBehaviour
         }
         //print(T.Length);
         t = t + (float)dt;
-
-
         T = T.Add(Elementwise.Multiply(F, dt));
 
-
-
-
-        //Generate(T.Add(b));
+        //Generate(T);
 
         return T;
         //}

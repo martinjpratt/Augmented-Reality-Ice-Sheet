@@ -34,7 +34,7 @@ namespace Microsoft.MixedReality.Toolkit
         VoiceCommand,
 
         /// <summary>
-        /// Voice to text dictation
+        /// Voice to text dication
         /// </summary>
         VoiceDictation,
 

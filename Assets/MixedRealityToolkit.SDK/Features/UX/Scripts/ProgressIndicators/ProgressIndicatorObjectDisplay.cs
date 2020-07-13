@@ -8,10 +8,9 @@ using UnityEngine;
 namespace Microsoft.MixedReality.Toolkit.UI
 {
     /// <summary>
-    /// This class manages how a GameObject rotates and/or scales
+    /// This class manages how a gameobject rotates and/or scales
     /// when activated as part of a Progress Indicator effect.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/ProgressIndicatorObjectDisplay")]
     public class ProgressIndicatorObjectDisplay : MonoBehaviour, IProgressIndicator
     {
         /// <inheritdoc/>
@@ -67,10 +66,12 @@ namespace Microsoft.MixedReality.Toolkit.UI
         private TextMeshPro messageText = null;
 
         [SerializeField]
+        private ProgressIndicatorState state = ProgressIndicatorState.Closed;
+
+        [SerializeField]
         [Range(0f, 1f)]
         private float progress;
 
-        private ProgressIndicatorState state = ProgressIndicatorState.Closed;
         private float currentScale;
 
         /// <inheritdoc/>

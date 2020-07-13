@@ -11,7 +11,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
     /// This class manages the 'rotating circle of dots' effect
     /// that is used as a Progress Indicator effect.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/ProgressIndicatorOrbsRotator")]
     public class ProgressIndicatorOrbsRotator : MonoBehaviour, IProgressIndicator
     {
         /// <inheritdoc/>
@@ -30,6 +29,8 @@ namespace Microsoft.MixedReality.Toolkit.UI
         private GameObject[] orbs = null;
         [SerializeField]
         private TextMeshPro messageText = null;
+        [SerializeField]
+        private ProgressIndicatorState state = ProgressIndicatorState.Closed;
         [SerializeField]
         public float rotationSpeedRawDegrees = -200f;
         [SerializeField]
@@ -52,7 +53,6 @@ namespace Microsoft.MixedReality.Toolkit.UI
         private bool stopRequested;
         private float rotationWhenStopped;
         private MaterialPropertyBlock[] propertyBlocks = null;
-        private ProgressIndicatorState state = ProgressIndicatorState.Closed;
 
         /// <inheritdoc/>
         public async Task OpenAsync()

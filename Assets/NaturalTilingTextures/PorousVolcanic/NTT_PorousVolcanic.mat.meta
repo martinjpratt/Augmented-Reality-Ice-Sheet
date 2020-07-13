@@ -1,8 +1,10 @@
 fileFormatVersion: 2
-guid: 801cb869ab6674871a071d58d55918f1
+guid: d19181a0106e0bc44910e8d3a32bc45f
+labels:
+- NaturalTilingTextures
+timeCreated: 1429583320
+licenseType: Store
 NativeFormatImporter:
-  externalObjects: {}
-  mainObjectFileID: 0
   userData: 
   assetBundleName: 
   assetBundleVariant: 

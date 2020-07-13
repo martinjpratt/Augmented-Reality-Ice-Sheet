@@ -117,14 +117,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         public override void OnInspectorGUI()
         {
-            if (!RenderProfileHeader(ProfileTitle, ProfileDescription, target, true, BackProfileType.Input))
-            {
-                return;
-            }
+            RenderProfileHeader(ProfileTitle, ProfileDescription, target, true, BackProfileType.Input);
 
             serializedObject.Update();
 
-            using (new EditorGUI.DisabledGroupScope(IsProfileLock((BaseMixedRealityProfile)target)))
+            using (new GUIEnabledWrapper(!IsProfileLock((BaseMixedRealityProfile)target)))
             {
                 EditorGUILayout.PropertyField(indicatorsPrefab);
 
@@ -140,7 +137,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 EditorGUILayout.PropertyField(isCameraControlEnabled);
                 {
                     EditorGUILayout.BeginVertical("Label");
-                    using (new EditorGUI.DisabledGroupScope(!isCameraControlEnabled.boolValue))
+                    using (new GUIEnabledWrapper(isCameraControlEnabled.boolValue))
                     {
                         EditorGUILayout.PropertyField(mouseLookSpeed);
                         EditorGUILayout.PropertyField(mouseLookButton);

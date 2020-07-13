@@ -60,9 +60,9 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         public IEnumerable<string> ContentTags => profile.ContentTags;
 
         // Cache these so we're not looking them up constantly
-        private EditorBuildSettingsScene[] cachedBuildScenes = Array.Empty<EditorBuildSettingsScene>();
+        private EditorBuildSettingsScene[] cachedBuildScenes = new EditorBuildSettingsScene[0];
 
-        // These get set to dirty based on what events have been received from the editor
+        // These get set to dirty based on what events have been recieved from the editor
         private bool activeSceneDirty = false;
         private bool buildSettingsDirty = false;
         private bool heirarchyDirty = false;
@@ -248,11 +248,6 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         {
             if (!MixedRealityToolkit.IsInitialized || !MixedRealityToolkit.Instance.HasActiveProfile || !MixedRealityToolkit.Instance.ActiveProfile.IsSceneSystemEnabled)
             {
-                return;
-            }
-
-            if (EditorSceneUtils.IsEditingPrefab())
-            {   // Never change scene settings while editing a prefab - it will boot you out of the prefab scene stage.
                 return;
             }
 
@@ -642,7 +637,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
 
                 EditorUtility.DisplayDialog(
                     "Invalid components found in " + scene.name,
-                    "Only lighting-related components are permitted. The following GameObjects will be moved to another scene:\n\n"
+                    "Only lighting-related componets are permitted. The following gameobjects will be moved to another scene:\n\n"
                     + String.Join("\n", rootObjectNames)
                     + "\n\nTo disable this warning, un-check 'EditorEnforceLightingSceneTypes' in your SceneSystem profile.", "OK");
 

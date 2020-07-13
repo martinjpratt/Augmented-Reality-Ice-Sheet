@@ -9,7 +9,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// A cursor that looks and acts more like the shell cursor.
     /// A two part cursor with visual feedback for all cursor states
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/InteractiveMeshCursor")]
     public class InteractiveMeshCursor : BaseCursor
     {
         [SerializeField]
@@ -141,7 +140,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
 
             // handle scale of main cursor go
-            float distance = Vector3.Distance(CoreServices.InputSystem.GazeProvider.GazeOrigin, transform.position);
+            float distance = Vector3.Distance(InputSystem.GazeProvider.GazeOrigin, transform.position);
             float smoothScaling = 1 - DefaultCursorDistance * distanceScaleFactor;
             transform.localScale = initialScale * (distance * distanceScaleFactor + smoothScaling);
         }

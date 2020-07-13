@@ -15,26 +15,15 @@ namespace Microsoft.MixedReality.Toolkit.Input
     [HelpURL("https://microsoft.github.io/MixedRealityToolkit-Unity/Documentation/Input/Overview.html")]
     public class MixedRealityInputSystem : BaseDataProviderAccessCoreSystem, IMixedRealityInputSystem, IMixedRealityCapabilityCheck
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the service.</param>
-        /// <param name="profile">The configuration profile for the service.</param>
-        [Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
         public MixedRealityInputSystem(
             IMixedRealityServiceRegistrar registrar,
-            MixedRealityInputSystemProfile profile) : this(profile)
+            MixedRealityInputSystemProfile profile) : base(registrar, profile)
         {
-            Registrar = registrar;
+            if (registrar == null)
+            {
+                Debug.LogError("The MixedRealityInputSystem object requires a valid IMixedRealityServiceRegistrar instance.");
+            }
         }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="profile">The configuration profile for the service.</param>
-        public MixedRealityInputSystem(
-            MixedRealityInputSystemProfile profile) : base(profile)
-        { }
 
         /// <inheritdoc/>
         public override string Name { get; protected set; } = "Mixed Reality Input System";
@@ -67,11 +56,15 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
         }
 
-        /// <inheritdoc />
-        public IMixedRealityFocusProvider FocusProvider => CoreServices.FocusProvider;
+        private IMixedRealityFocusProvider focusProvider = null;
 
         /// <inheritdoc />
-        public IMixedRealityRaycastProvider RaycastProvider => CoreServices.RaycastProvider;
+        public IMixedRealityFocusProvider FocusProvider => focusProvider ?? (focusProvider = Registrar.GetService<IMixedRealityFocusProvider>());
+
+        private IMixedRealityRaycastProvider raycastProvider = null;
+
+        /// <inheritdoc />
+        public IMixedRealityRaycastProvider RaycastProvider => raycastProvider ?? (raycastProvider = Registrar.GetService<IMixedRealityRaycastProvider>());
 
         /// <inheritdoc />
         public IMixedRealityGazeProvider GazeProvider { get; private set; }
@@ -126,17 +119,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
                 // If one of the running data providers supports the requested capability, 
                 // the application has the needed support to leverage the desired functionality.
-                if (capabilityChecker?.CheckCapability(capability) == true)
+                if ((capabilityChecker != null) &&
+                    capabilityChecker.CheckCapability(capability))
                 {
                     return true;
                 }
-            }
-
-            // Check GazeProvider directly since not populated in data provider list but life-cycle is managed by InputSystem
-            var gazeProvider_CapabilityCheck = GazeProvider as IMixedRealityCapabilityCheck;
-            if (gazeProvider_CapabilityCheck?.CheckCapability(capability) == true)
-            {
-                return true;
             }
 
             return false;
@@ -228,51 +215,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
             dictationEventData = new DictationEventData(EventSystem.current);
 
             handTrackingInputEventData = new HandTrackingInputEventData(EventSystem.current);
-
-            CreateDataProviders();
-        }
-
-        /// <inheritdoc />
-        public override void Enable()
-        {
-            CreateDataProviders();
-
-            // Ensure data providers are enabled (performed by the base class)
-            base.Enable();
-
-            InputEnabled?.Invoke();
-        }
-
-        private void CreateDataProviders()
-        {
-            MixedRealityInputSystemProfile profile = ConfigurationProfile as MixedRealityInputSystemProfile;
-
-            // If the system gets disabled, the gaze provider is destroyed.
-            // Ensure that it gets recreated on when re-enabled.
-            if (GazeProvider == null && profile != null)
-            {
-                InstantiateGazeProvider(profile.PointerProfile);
-            }
-
-            if ((GetDataProviders().Count == 0) && (profile != null))
-            {
-                // Register the input device managers.
-                for (int i = 0; i < profile.DataProviderConfigurations.Length; i++)
-                {
-                    MixedRealityInputDataProviderConfiguration configuration = profile.DataProviderConfigurations[i];
-                    object[] args = { this, configuration.ComponentName, configuration.Priority, configuration.DeviceManagerProfile };
-
-                    RegisterDataProvider<IMixedRealityInputDeviceManager>(
-                        configuration.ComponentType.Type,
-                        configuration.RuntimePlatform,
-                        args);
-                }
-            }
         }
 
         private void InstantiateGazeProvider(MixedRealityPointerProfile pointerProfile)
         {
-            if (pointerProfile != null && pointerProfile.GazeProviderType?.Type != null)
+            if (pointerProfile?.GazeProviderType?.Type != null)
             {
                 GazeProvider = CameraCache.Main.gameObject.EnsureComponent(pointerProfile.GazeProviderType.Type) as IMixedRealityGazeProvider;
                 GazeProvider.GazeCursorPrefab = pointerProfile.GazeCursorPrefab;
@@ -284,6 +231,39 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 Debug.LogError("The Input system is missing the required GazeProviderType!");
                 return;
             }
+        }
+
+        /// <inheritdoc />
+        public override void Enable()
+        {
+            MixedRealityInputSystemProfile profile = ConfigurationProfile as MixedRealityInputSystemProfile;
+
+            // If the system gets disabled, the gaze provider is destroyed.
+            // Ensure that it gets recreated on when reenabled.
+            if (GazeProvider == null)
+            {
+                InstantiateGazeProvider(profile?.PointerProfile);
+            }
+
+            if ((GetDataProviders().Count == 0) && (profile != null))
+            {
+                // Register the input device managers.
+                for (int i = 0; i < profile.DataProviderConfigurations.Length; i++)
+                {
+                    MixedRealityInputDataProviderConfiguration configuration = profile.DataProviderConfigurations[i];
+                    object[] args = { Registrar, this, configuration.ComponentName, configuration.Priority, configuration.DeviceManagerProfile };
+
+                    RegisterDataProvider<IMixedRealityInputDeviceManager>(
+                        configuration.ComponentType.Type,
+                        configuration.RuntimePlatform,
+                        args);
+                }
+            }
+
+            // Ensure data providers are enabled (performed by the base class)
+            base.Enable();
+
+            InputEnabled?.Invoke();
         }
 
         /// <inheritdoc />
@@ -318,7 +298,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
                 GazeProvider = null;
             }
 
-            foreach (var provider in GetDataProviders<IMixedRealityInputDeviceManager>())
+            foreach(var provider in GetDataProviders<IMixedRealityInputDeviceManager>())
             {
                 if (provider != null)
                 {
@@ -991,20 +971,15 @@ namespace Microsoft.MixedReality.Toolkit.Input
         public void RaisePointerDown(IMixedRealityPointer pointer, MixedRealityInputAction inputAction, Handedness handedness = Handedness.None, IMixedRealityInputSource inputSource = null)
         {
             // Only lock the object if there is a grabbable above in the hierarchy
-            Transform currentObject = null;
-            GameObject currentGameObject = pointer.Result?.Details.Object;
-            if (currentGameObject != null)
-            {
-                currentObject = currentGameObject.transform;
-            }
+            Transform currentObject = pointer.Result?.Details.Object?.transform;
             IMixedRealityPointerHandler ancestorPointerHandler = null;
-            while (currentObject != null && ancestorPointerHandler == null)
+            while(currentObject != null && ancestorPointerHandler == null)
             {
-                foreach (var component in currentObject.GetComponents<Component>())
+                foreach(var component in currentObject.GetComponents<Component>())
                 {
                     if (component is IMixedRealityPointerHandler)
                     {
-                        ancestorPointerHandler = (IMixedRealityPointerHandler)component;
+                        ancestorPointerHandler = (IMixedRealityPointerHandler) component;
                         break;
                     }
                 }

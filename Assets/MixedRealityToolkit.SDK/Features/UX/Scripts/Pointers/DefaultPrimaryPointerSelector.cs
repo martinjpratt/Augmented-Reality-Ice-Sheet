@@ -17,12 +17,20 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         public void Initialize()
         {
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealityPointerHandler>(this);
+            IMixedRealityInputSystem inputSystem;
+            if (MixedRealityServiceRegistry.TryGetService<IMixedRealityInputSystem>(out inputSystem))
+            {
+                inputSystem.RegisterHandler<IMixedRealityPointerHandler>(this);
+            }
         }
 
         public void Destroy()
         {
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealityPointerHandler>(this);
+            IMixedRealityInputSystem inputSystem;
+            if (MixedRealityServiceRegistry.TryGetService<IMixedRealityInputSystem>(out inputSystem))
+            {
+                inputSystem.UnregisterHandler<IMixedRealityPointerHandler>(this);
+            }
         }
 
         #region IMixedRealityPrimaryPointerSelector

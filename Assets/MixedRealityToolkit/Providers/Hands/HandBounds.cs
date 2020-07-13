@@ -10,7 +10,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// <summary>
     /// Utility behavior to access the axis aligned bounds of IMixedRealityHands (or the proxy visualizer of IMixedRealityControllers).
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/Core/HandBounds")]
     public class HandBounds : MonoBehaviour, IMixedRealitySourceStateHandler, IMixedRealityHandJointHandler
     {
         /// <summary>
@@ -31,18 +30,36 @@ namespace Microsoft.MixedReality.Toolkit.Input
             set { drawBoundsGizmo = value; }
         }
 
+        private IMixedRealityInputSystem inputSystem = null;
+        
+        /// <summary>
+        /// The active instance of the input system.
+        /// </summary>
+        protected IMixedRealityInputSystem InputSystem
+        {
+            get
+            {
+                if (inputSystem == null)
+                {
+                    MixedRealityServiceRegistry.TryGetService(out inputSystem);
+                }
+
+                return inputSystem;
+            }
+        }
+
         #region MonoBehaviour Implementation
 
         private void OnEnable()
         {
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealitySourceStateHandler>(this);
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealityHandJointHandler>(this);
+            InputSystem?.RegisterHandler<IMixedRealitySourceStateHandler>(this);
+            InputSystem?.RegisterHandler<IMixedRealityHandJointHandler>(this);
         }
 
         private void OnDisable()
         {
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealitySourceStateHandler>(this);
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealityHandJointHandler>(this);
+            InputSystem?.UnregisterHandler<IMixedRealitySourceStateHandler>(this);
+            InputSystem?.UnregisterHandler<IMixedRealityHandJointHandler>(this);
         }
 
         private void OnDrawGizmos()

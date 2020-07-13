@@ -13,24 +13,15 @@ namespace Microsoft.MixedReality.Toolkit.Teleport
     /// </summary>
     public class MixedRealityTeleportSystem : BaseCoreSystem, IMixedRealityTeleportSystem
     {
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        /// <param name="registrar">The <see cref="IMixedRealityServiceRegistrar"/> instance that loaded the service.</param>
-        [System.Obsolete("This constructor is obsolete (registrar parameter is no longer required) and will be removed in a future version of the Microsoft Mixed Reality Toolkit.")]
         public MixedRealityTeleportSystem(
             IMixedRealityServiceRegistrar registrar) : base(registrar, null) // Teleport system does not use a profile
         {
-            Registrar = registrar;
-        }
-
-        /// <summary>
-        /// Constructor.
-        /// </summary>
-        public MixedRealityTeleportSystem() : base(null) // Teleport system does not use a profile
-        {
-            IsInputSystemEnabled = CoreServices.InputSystem != null;
-        }
+            if (registrar == null)
+            {
+                Debug.LogError("The MixedRealityTeleportSystem object requires a valid IMixedRealityServiceRegistrar instance.");
+            }
+            IsInputSystemEnabled = (registrar.GetService<IMixedRealityInputSystem>(showLogs: false) != null);
+        } 
 
         private TeleportEventData teleportEventData;
 
@@ -121,7 +112,7 @@ namespace Microsoft.MixedReality.Toolkit.Teleport
         }
 
         /// <summary>
-        /// Register a <see href="https://docs.unity3d.com/ScriptReference/GameObject.html">GameObject</see> from listening to Teleport events.
+        /// Unregister a <see href="https://docs.unity3d.com/ScriptReference/GameObject.html">GameObject</see> from listening to Teleport events.
         /// </summary>
         public override void Register(GameObject listener)
         {
@@ -149,7 +140,7 @@ namespace Microsoft.MixedReality.Toolkit.Teleport
         /// <inheritdoc />
         public float TeleportDuration
         {
-            get => teleportDuration;
+            get { return teleportDuration; }
             set
             {
                 if (isProcessingTeleportRequest)

@@ -122,7 +122,7 @@ namespace Microsoft.MixedReality.Toolkit.SceneSystem
         float SceneOperationProgress { get; }
 
         /// <summary>
-        /// True if the scene system is transitioning from one lighting scene to another.
+        /// True if the scene system is transitioning from one lighting scene to anthother.
         /// Lighting operations will not impede other operations.
         /// </summary>
         bool LightingOperationInProgress { get; }

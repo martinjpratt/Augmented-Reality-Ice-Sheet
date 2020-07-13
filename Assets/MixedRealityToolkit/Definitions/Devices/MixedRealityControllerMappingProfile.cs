@@ -24,7 +24,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         [SerializeField]
         [Tooltip("The list of controller mappings your application can use.")]
         [FormerlySerializedAs("mixedRealityControllerMappingProfiles")]
-        private MixedRealityControllerMapping[] mixedRealityControllerMappings = Array.Empty<MixedRealityControllerMapping>();
+        private MixedRealityControllerMapping[] mixedRealityControllerMappings = new MixedRealityControllerMapping[0];
 
         /// <summary>
         /// The list of controller mappings your application can use.
@@ -221,7 +221,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         private static Handedness[] GetSupportedHandedness(Type controllerType)
         {
             var attribute = MixedRealityControllerAttribute.Find(controllerType);
-            return attribute != null ? attribute.SupportedHandedness : Array.Empty<Handedness>();
+            return attribute != null ? attribute.SupportedHandedness : new Handedness[0];
         }
     }
 }

@@ -14,7 +14,6 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using Microsoft.MixedReality.Toolkit.SceneSystem;
 using Microsoft.MixedReality.Toolkit.CameraSystem;
-using Microsoft.MixedReality.Toolkit.Rendering;
 
 #if UNITY_EDITOR
 using Microsoft.MixedReality.Toolkit.Input.Editor;
@@ -29,15 +28,13 @@ namespace Microsoft.MixedReality.Toolkit
     /// The Profile can be swapped out at any time to meet the needs of your project.
     /// </summary>
     [DisallowMultipleComponent]
-    [AddComponentMenu("Scripts/MRTK/Core/MixedRealityToolkit")]
     public class MixedRealityToolkit : MonoBehaviour, IMixedRealityServiceRegistrar
     {
+#region Mixed Reality Toolkit Profile configuration
+
         private static bool isInitializing = false;
         private static bool isApplicationQuitting = false;
         private static bool internalShutdown = false;
-        private const string NoMRTKProfileErrorMessage = "No Mixed Reality Configuration Profile found, cannot initialize the Mixed Reality Toolkit";
-
-        #region Mixed Reality Toolkit Profile configuration
 
         /// <summary>
         /// Checks if there is a valid instance of the MixedRealityToolkit, then checks if there is there a valid Active Profile.
@@ -64,7 +61,7 @@ namespace Microsoft.MixedReality.Toolkit
             {
                 return activeInstance == this;
             }
-        }
+        } 
 
         private bool HasProfileAndIsInitialized => activeProfile != null && IsInitialized;
 
@@ -125,9 +122,9 @@ namespace Microsoft.MixedReality.Toolkit
             }
         }
 
-        #endregion Mixed Reality Toolkit Profile configuration
+#endregion Mixed Reality Toolkit Profile configuration
 
-        #region Mixed Reality runtime service registry
+#region Mixed Reality runtime service registry
 
         private static readonly Dictionary<Type, IMixedRealityService> activeSystems = new Dictionary<Type, IMixedRealityService>();
 
@@ -148,9 +145,9 @@ namespace Microsoft.MixedReality.Toolkit
         [Obsolete("Use GetDataProvider<T> of MixedRealityService registering the desired IMixedRealityDataProvider")]
         public IReadOnlyList<Tuple<Type, IMixedRealityService>> RegisteredMixedRealityServices => new List<Tuple<Type, IMixedRealityService>>(registeredMixedRealityServices) as IReadOnlyList<Tuple<Type, IMixedRealityService>>;
 
-        #endregion Mixed Reality runtime service registry
+#endregion Mixed Reality runtime service registry
 
-        #region IMixedRealityServiceRegistrar implementation
+#region IMixedRealityServiceRegistrar implementation
 
         /// <inheritdoc />
         public bool RegisterService<T>(T serviceInstance) where T : IMixedRealityService
@@ -160,22 +157,6 @@ namespace Microsoft.MixedReality.Toolkit
 
         /// <inheritdoc />
         public bool RegisterService<T>(
-            Type concreteType,
-            SupportedPlatforms supportedPlatforms = (SupportedPlatforms)(-1),
-            params object[] args) where T : IMixedRealityService
-        {
-            return RegisterServiceInternal<T>(
-                true, // Retry with an added IMixedRealityService parameter
-                concreteType,
-                supportedPlatforms,
-                args);
-        }
-
-        /// <summary>
-        /// Internal method that creates an instance of the specified concrete type and registers the service.
-        /// </summary>
-        private bool RegisterServiceInternal<T>(
-            bool retryWithRegistrar,
             Type concreteType,
             SupportedPlatforms supportedPlatforms = (SupportedPlatforms)(-1),
             params object[] args) where T : IMixedRealityService
@@ -214,22 +195,6 @@ namespace Microsoft.MixedReality.Toolkit
             }
             catch (Exception e)
             {
-                if (retryWithRegistrar && (e is MissingMethodException))
-                {
-                    Debug.LogWarning($"Failed to find an appropriate constructor for the {concreteType.Name} service. Adding the Registrar instance and re-attempting registration.");
-                    List<object> updatedArgs = new List<object>();
-                    updatedArgs.Add(this);
-                    if (args != null)
-                    {
-                        updatedArgs.AddRange(args);
-                    }
-                    return RegisterServiceInternal<T>(
-                        false, // Do NOT retry, we have already added the configured IMIxedRealityServiceRegistrar
-                        concreteType,
-                        supportedPlatforms,
-                        updatedArgs.ToArray());
-                }
-
                 Debug.LogError($"Failed to register the {concreteType.Name} service: {e.GetType()} - {e.Message}");
 
                 // Failures to create the concrete type generally surface as nested exceptions - just logging
@@ -312,7 +277,7 @@ namespace Microsoft.MixedReality.Toolkit
             return GetAllServicesByNameInternal<T>(typeof(T), name);
         }
 
-        #endregion IMixedRealityServiceRegistrar implementation
+#endregion IMixedRealityServiceRegistrar implementation
 
         /// <summary>
         /// Once all services are registered and properties updated, the Mixed Reality Toolkit will initialize all active services.
@@ -325,16 +290,7 @@ namespace Microsoft.MixedReality.Toolkit
             //If the Mixed Reality Toolkit is not configured, stop.
             if (ActiveProfile == null)
             {
-                if (!Application.isPlaying)
-                {
-                    // Log as warning if in edit mode. Likely user is making changes etc.
-                    Debug.LogWarning(NoMRTKProfileErrorMessage);
-                }
-                else
-                {
-                    Debug.LogError(NoMRTKProfileErrorMessage);
-                }
-
+                Debug.LogError("No Mixed Reality Configuration Profile found, cannot initialize the Mixed Reality Toolkit");
                 return;
             }
 
@@ -348,14 +304,12 @@ namespace Microsoft.MixedReality.Toolkit
             {
                 registeredMixedRealityServices.Clear();
             }
-
-            EnsureEditorSetup();
 #endif
 
             CoreServices.ResetCacheReferences();
             EnsureMixedRealityRequirements();
 
-            #region Services Registration
+#region Services Registration
 
             // If the Input system has been selected for initialization in the Active profile, enable it in the project
             if (ActiveProfile.IsInputSystemEnabled)
@@ -365,20 +319,20 @@ namespace Microsoft.MixedReality.Toolkit
                 InputMappingAxisUtility.CheckUnityInputManagerMappings(ControllerMappingLibrary.UnityInputManagerAxes);
 #endif
 
-                object[] args = { ActiveProfile.InputSystemProfile };
+                object[] args = { this, ActiveProfile.InputSystemProfile };
                 if (!RegisterService<IMixedRealityInputSystem>(ActiveProfile.InputSystemType, args: args) || CoreServices.InputSystem == null)
                 {
                     Debug.LogError("Failed to start the Input System!");
                 }
 
-                args = new object[] { ActiveProfile.InputSystemProfile };
+                args = new object[] { this, ActiveProfile.InputSystemProfile };
                 if (!RegisterService<IMixedRealityFocusProvider>(ActiveProfile.InputSystemProfile.FocusProviderType, args: args))
                 {
                     Debug.LogError("Failed to register the focus provider! The input system will not function without it.");
                     return;
                 }
 
-                args = new object[] { ActiveProfile.InputSystemProfile };
+                args = new object[] { this, ActiveProfile.InputSystemProfile };
                 if (!RegisterService<IMixedRealityRaycastProvider>(ActiveProfile.InputSystemProfile.RaycastProviderType, args: args))
                 {
                     Debug.LogError("Failed to register the raycast provider! The input system will not function without it.");
@@ -395,7 +349,7 @@ namespace Microsoft.MixedReality.Toolkit
             // If the Boundary system has been selected for initialization in the Active profile, enable it in the project
             if (ActiveProfile.IsBoundarySystemEnabled)
             {
-                object[] args = { ActiveProfile.BoundaryVisualizationProfile, ActiveProfile.TargetExperienceScale };
+                object[] args = { this, ActiveProfile.BoundaryVisualizationProfile, ActiveProfile.TargetExperienceScale };
                 if (!RegisterService<IMixedRealityBoundarySystem>(ActiveProfile.BoundarySystemSystemType, args: args) || CoreServices.BoundarySystem == null)
                 {
                     Debug.LogError("Failed to start the Boundary System!");
@@ -405,7 +359,7 @@ namespace Microsoft.MixedReality.Toolkit
             // If the Camera system has been selected for initialization in the Active profile, enable it in the project
             if (ActiveProfile.IsCameraSystemEnabled)
             {
-                object[] args = { ActiveProfile.CameraProfile };
+                object[] args = { this, ActiveProfile.CameraProfile };
                 if (!RegisterService<IMixedRealityCameraSystem>(ActiveProfile.CameraSystemType, args: args) || CoreServices.CameraSystem == null)
                 {
                     Debug.LogError("Failed to start the Camera System!");
@@ -415,7 +369,7 @@ namespace Microsoft.MixedReality.Toolkit
             // If the Spatial Awareness system has been selected for initialization in the Active profile, enable it in the project
             if (ActiveProfile.IsSpatialAwarenessSystemEnabled)
             {
-                object[] args = { ActiveProfile.SpatialAwarenessSystemProfile };
+                object[] args = { this, ActiveProfile.SpatialAwarenessSystemProfile };
                 if (!RegisterService<IMixedRealitySpatialAwarenessSystem>(ActiveProfile.SpatialAwarenessSystemSystemType, args: args) && CoreServices.SpatialAwarenessSystem != null)
                 {
                     Debug.LogError("Failed to start the Spatial Awareness System!");
@@ -425,7 +379,8 @@ namespace Microsoft.MixedReality.Toolkit
             // If the Teleport system has been selected for initialization in the Active profile, enable it in the project
             if (ActiveProfile.IsTeleportSystemEnabled)
             {
-                if (!RegisterService<IMixedRealityTeleportSystem>(ActiveProfile.TeleportSystemSystemType) || CoreServices.TeleportSystem == null)
+                object[] args = { this };
+                if (!RegisterService<IMixedRealityTeleportSystem>(ActiveProfile.TeleportSystemSystemType, args: args) || CoreServices.TeleportSystem == null)
                 {
                     Debug.LogError("Failed to start the Teleport System!");
                 }
@@ -433,7 +388,7 @@ namespace Microsoft.MixedReality.Toolkit
 
             if (ActiveProfile.IsDiagnosticsSystemEnabled)
             {
-                object[] args = { ActiveProfile.DiagnosticsSystemProfile };
+                object[] args = { this, ActiveProfile.DiagnosticsSystemProfile };
                 if (!RegisterService<IMixedRealityDiagnosticsSystem>(ActiveProfile.DiagnosticsSystemSystemType, args: args) || CoreServices.DiagnosticsSystem == null)
                 {
                     Debug.LogError("Failed to start the Diagnostics System!");
@@ -442,7 +397,7 @@ namespace Microsoft.MixedReality.Toolkit
 
             if (ActiveProfile.IsSceneSystemEnabled)
             {
-                object[] args = { ActiveProfile.SceneSystemProfile };
+                object[] args = { this, ActiveProfile.SceneSystemProfile };
                 if (!RegisterService<IMixedRealitySceneSystem>(ActiveProfile.SceneSystemSystemType, args: args) || CoreServices.SceneSystem == null)
                 {
                     Debug.LogError("Failed to start the Scene System!");
@@ -451,31 +406,26 @@ namespace Microsoft.MixedReality.Toolkit
 
             if (ActiveProfile.RegisteredServiceProvidersProfile != null)
             {
-                for (int i = 0; i < ActiveProfile.RegisteredServiceProvidersProfile.Configurations?.Length; i++)
+                for (int i = 0; i < ActiveProfile.RegisteredServiceProvidersProfile?.Configurations?.Length; i++)
                 {
                     var configuration = ActiveProfile.RegisteredServiceProvidersProfile.Configurations[i];
 
                     if (typeof(IMixedRealityExtensionService).IsAssignableFrom(configuration.ComponentType.Type))
                     {
-                        object[] args = { configuration.ComponentName, configuration.Priority, configuration.Profile };
-                        RegisterService<IMixedRealityExtensionService>(configuration.ComponentType, configuration.RuntimePlatform, args);
+                        object[] args = { this, configuration.ComponentName, configuration.Priority, configuration.ConfigurationProfile };
+                        if (!RegisterService<IMixedRealityExtensionService>(configuration.ComponentType, configuration.RuntimePlatform, args))
+                        {
+                            Debug.LogError($"Failed to register {configuration.ComponentName}");
+                        }
                     }
                 }
             }
 
-            #endregion Service Registration
+#endregion Service Registration
 
             InitializeAllServices();
 
             isInitializing = false;
-        }
-
-        private void EnsureEditorSetup()
-        {
-            if (ActiveProfile.RenderDepthBuffer)
-            {
-                CameraCache.Main.gameObject.EnsureComponent<DepthBufferRenderer>();
-            }
         }
 
         private void EnsureMixedRealityRequirements()
@@ -483,7 +433,6 @@ namespace Microsoft.MixedReality.Toolkit
             // There's lots of documented cases that if the camera doesn't start at 0,0,0, things break with the WMR SDK specifically.
             // We'll enforce that here, then tracking can update it to the appropriate position later.
             CameraCache.Main.transform.position = Vector3.zero;
-            CameraCache.Main.transform.rotation = Quaternion.identity;
 
             // This will create the playspace
             Transform playspace = MixedRealityPlayspace.Transform;
@@ -524,7 +473,7 @@ namespace Microsoft.MixedReality.Toolkit
             }
         }
 
-        #region MonoBehaviour Implementation
+#region MonoBehaviour Implementation
 
         private static MixedRealityToolkit activeInstance;
         private static bool newInstanceBeingInitialized = false;
@@ -651,10 +600,10 @@ namespace Microsoft.MixedReality.Toolkit
             UnregisterInstance(this);
         }
 
-        #endregion MonoBehaviour Implementation
+#endregion MonoBehaviour Implementation
 
-        #region Instance Registration
-
+#region Instance Registration
+        
         private const string activeInstanceGameObjectName = "MixedRealityToolkit";
         private const string inactiveInstanceGameObjectName = "MixedRealityToolkit (Inactive)";
         private static List<MixedRealityToolkit> toolkitInstances = new List<MixedRealityToolkit>();
@@ -756,7 +705,7 @@ namespace Microsoft.MixedReality.Toolkit
                 }
 
                 for (int i = 0; i < toolkitInstances.Count; i++)
-                {
+                { 
                     if (toolkitInstances[i] == null)
                     {   // This may have been a mass-deletion - be wary of soon-to-be-unregistered instances
                         continue;
@@ -792,11 +741,11 @@ namespace Microsoft.MixedReality.Toolkit
             }
         }
 
-        #endregion Instance Registration
+#endregion Instance Registration
 
-        #region Service Container Management
+#region Service Container Management
 
-        #region Registration
+#region Registration
         // NOTE: This method intentionally does not add to the registry. This is actually mostly a helper function for RegisterServiceInternal<T>.
         private bool RegisterServiceInternal(Type interfaceType, IMixedRealityService serviceInstance)
         {
@@ -834,6 +783,7 @@ namespace Microsoft.MixedReality.Toolkit
             {
                 serviceInstance.Initialize();
             }
+
             return true;
         }
 
@@ -855,9 +805,9 @@ namespace Microsoft.MixedReality.Toolkit
             return false;
         }
 
-        #endregion Registration
+#endregion Registration
 
-        #region Multiple Service Management
+#region Multiple Service Management
 
         /// <summary>
         /// Enable all services in the Mixed Reality Toolkit active service registry for a given type
@@ -966,9 +916,9 @@ namespace Microsoft.MixedReality.Toolkit
             // later may rely on those which are initialized first.
             var orderedActiveSystems = activeSystems.OrderByDescending(m => m.Value.Priority);
 
-            foreach (var service in orderedActiveSystems)
+            foreach (var system in orderedActiveSystems)
             {
-                Type type = service.Key;
+                Type type = system.Key;
 
                 if (typeof(IMixedRealityBoundarySystem).IsAssignableFrom(type))
                 {
@@ -1007,36 +957,23 @@ namespace Microsoft.MixedReality.Toolkit
 
         private bool ExecuteOnAllServicesInOrder(Action<IMixedRealityService> execute)
         {
-            if (!HasProfileAndIsInitialized)
-            {
-                return false;
-            }
-
-            var services = MixedRealityServiceRegistry.GetAllServices();
-            int length = services.Count;
-            for (int i = 0; i < length; i++)
-            {
-                execute(services[i]);
-            }
-
-            return true;
+            var orderedSystems = MixedRealityServiceRegistry.GetAllServices();
+            return ExecuteOnAllServices(orderedSystems, execute);
         }
 
         private bool ExecuteOnAllServicesReverseOrder(Action<IMixedRealityService> execute)
         {
-            if (!HasProfileAndIsInitialized)
+            var orderedSystems = MixedRealityServiceRegistry.GetAllServices().Reverse();
+            return ExecuteOnAllServices(orderedSystems, execute);
+        }
+
+        private bool ExecuteOnAllServices(IEnumerable<IMixedRealityService> services, Action<IMixedRealityService> execute)
+        {
+            if (!HasProfileAndIsInitialized) { return false; }
+            foreach (var system in services)
             {
-                return false;
+                execute(system);
             }
-
-            var services = MixedRealityServiceRegistry.GetAllServices();
-            int length = services.Count;
-
-            for (int i = length - 1; i >= 0; i--)
-            {
-                execute(services[i]);
-            }
-
             return true;
         }
 
@@ -1130,13 +1067,9 @@ namespace Microsoft.MixedReality.Toolkit
 
             if (!CanGetService(interfaceType)) { return new List<T>() as IReadOnlyList<T>; }
 
-            bool isNullServiceName = string.IsNullOrEmpty(serviceName);
-            var systems = MixedRealityServiceRegistry.GetAllServices();
-            int length = systems.Count;
-            for (int i = 0; i < length; i++)
+            foreach(var service in MixedRealityServiceRegistry.GetAllServices())
             {
-                IMixedRealityService service = systems[i];
-                if (service is T && (isNullServiceName || service.Name == serviceName))
+                if (service is T && (string.IsNullOrEmpty(serviceName) || service.Name == serviceName))
                 {
                     services.Add((T)service);
                 }
@@ -1207,11 +1140,11 @@ namespace Microsoft.MixedReality.Toolkit
             return true;
         }
 
-        #endregion Service Utilities
+#endregion Service Utilities
 
-        #endregion Service Container Management
+#endregion Service Container Management
 
-        #region Core System Accessors
+#region Core System Accessors
 
         /// <summary>
         /// The current Input System registered with the Mixed Reality Toolkit.
@@ -1344,7 +1277,7 @@ namespace Microsoft.MixedReality.Toolkit
 
         #endregion Core System Accessors
 
-        #region Application Event Listeners
+#region Application Event Listeners
         /// <summary>
         /// Registers once on startup and sets isApplicationQuitting to true when quit event is detected.
         /// </summary>
@@ -1411,7 +1344,7 @@ namespace Microsoft.MixedReality.Toolkit
                     // These checks are only necessary in edit mode
                     if (!Application.isPlaying)
                     {
-                        // Clean the toolkit instances hierarchy in case instances were deleted.
+                        // Clean the toolkit instances heirarchy in case instances were deleted.
                         for (int i = toolkitInstances.Count - 1; i >= 0; i--)
                         {
                             if (toolkitInstances[i] == null)

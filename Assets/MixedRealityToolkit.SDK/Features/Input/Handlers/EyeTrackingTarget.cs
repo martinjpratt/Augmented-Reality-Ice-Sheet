@@ -11,7 +11,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// <summary>
     /// A game object with the "EyeTrackingTarget" script attached reacts to being looked at independent of other available inputs.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/EyeTrackingTarget")]
     public class EyeTrackingTarget : InputSystemGlobalHandlerListener, IMixedRealityPointerHandler, IMixedRealitySpeechHandler
     {
         [Tooltip("Select action that are specific to when the target is looked at.")]
@@ -154,11 +153,10 @@ namespace Microsoft.MixedReality.Toolkit.Input
 
         private void Update()
         {
-            var eyeGazeProvider = CoreServices.InputSystem?.EyeGazeProvider;
             // Try to manually poll the eye tracking data
-            if (eyeGazeProvider != null 
-                && eyeGazeProvider.UseEyeTracking 
-                && eyeGazeProvider.IsEyeGazeValid)
+            if ((InputSystem != null) && (InputSystem.EyeGazeProvider != null) && 
+                InputSystem.EyeGazeProvider.UseEyeTracking && 
+                InputSystem.EyeGazeProvider.IsEyeGazeValid)
             {
                 UpdateHitTarget();
 
@@ -191,30 +189,29 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <inheritdoc />
         protected override void RegisterHandlers()
         {
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealityPointerHandler>(this);
-            CoreServices.InputSystem?.RegisterHandler<IMixedRealitySpeechHandler>(this);
+            InputSystem?.RegisterHandler<IMixedRealityPointerHandler>(this);
+            InputSystem?.RegisterHandler<IMixedRealitySpeechHandler>(this);
         }
 
         /// <inheritdoc />
         protected override void UnregisterHandlers()
         {
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealityPointerHandler>(this);
-            CoreServices.InputSystem?.UnregisterHandler<IMixedRealitySpeechHandler>(this);
+            InputSystem?.UnregisterHandler<IMixedRealityPointerHandler>(this);
+            InputSystem?.UnregisterHandler<IMixedRealitySpeechHandler>(this);
         }
 
         private void UpdateHitTarget()
         {
-            var eyeGazeProvider = CoreServices.InputSystem?.EyeGazeProvider;
-            if (eyeGazeProvider != null)
+            if (lastEyeSignalUpdateTimeFromET != InputSystem?.EyeGazeProvider?.Timestamp)
             {
-                if (lastEyeSignalUpdateTimeFromET != eyeGazeProvider.Timestamp)
+                if ((InputSystem != null) && (InputSystem.EyeGazeProvider != null))
                 {
-                    lastEyeSignalUpdateTimeFromET = eyeGazeProvider.Timestamp;
+                    lastEyeSignalUpdateTimeFromET = (InputSystem?.EyeGazeProvider?.Timestamp).Value;
                     lastEyeSignalUpdateTimeLocal = DateTime.UtcNow;
 
                     // ToDo: Handle raycasting layers
                     RaycastHit hitInfo = default(RaycastHit);
-                    Ray lookRay = new Ray(eyeGazeProvider.GazeOrigin, eyeGazeProvider.GazeDirection.normalized);
+                    Ray lookRay = new Ray(InputSystem.EyeGazeProvider.GazeOrigin, InputSystem.EyeGazeProvider.GazeDirection.normalized);
                     bool isHit = UnityEngine.Physics.Raycast(lookRay, out hitInfo);
 
                     if (isHit)
@@ -229,11 +226,11 @@ namespace Microsoft.MixedReality.Toolkit.Input
                         LookedAtEyeTarget = null;
                     }
                 }
-                else if ((DateTime.UtcNow - lastEyeSignalUpdateTimeLocal).TotalMilliseconds > EyeTrackingTimeoutInMilliseconds)
-                {
-                    LookedAtTarget = null;
-                    LookedAtEyeTarget = null;
-                }
+            }
+            else if ((DateTime.UtcNow - lastEyeSignalUpdateTimeLocal).TotalMilliseconds > EyeTrackingTimeoutInMilliseconds)
+            {
+                LookedAtTarget = null;
+                LookedAtEyeTarget = null;
             }
         }
         

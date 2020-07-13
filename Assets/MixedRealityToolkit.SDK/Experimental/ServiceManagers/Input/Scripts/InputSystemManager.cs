@@ -15,7 +15,6 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.Input
     /// <summary>
     /// Service manager supporting running the input system, without requiring the MixedRealityToolkit object.
     /// </summary>
-    [AddComponentMenu("Scripts/MRTK/SDK/InputSystemManager")]
     public class InputSystemManager : BaseServiceManager
     {
         [SerializeField]
@@ -49,20 +48,23 @@ namespace Microsoft.MixedReality.Toolkit.Experimental.Input
 #endif
 
             // The input system class takes arguments for:
+            // * The registrar
             // * The input system profile
-            object[] args = { profile };
+            object[] args = { this, profile };
             Initialize<IMixedRealityInputSystem>(InputSystemType.Type, args: args);
 
             // The input system uses the focus provider specified in the profile.
             // The args for the focus provider are:
+            // * The registrar
             // * The input system profile
-            args = new object[] { profile };
+            args = new object[] { this, profile };
             Initialize<IMixedRealityFocusProvider>(profile.FocusProviderType.Type, args: args);
 
             // The input system uses the raycast provider specified in the profile.
             // The args for the focus provider are:
+            // * The registrar
             // * The input system profile
-            args = new object[] { profile };
+            args = new object[] { this, profile };
             Initialize<IMixedRealityRaycastProvider>(profile.RaycastProviderType, args: args);
 
 

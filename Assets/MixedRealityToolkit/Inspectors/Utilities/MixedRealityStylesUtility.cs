@@ -20,20 +20,10 @@ namespace Microsoft.MixedReality.Toolkit.Utilities.Editor
         /// <summary>
         /// Default style for foldouts with bold large font size title
         /// </summary>
-        public static readonly GUIStyle BoldTitleFoldoutStyle =
-          new GUIStyle(EditorStyles.foldout)
-          {
-              fontStyle = FontStyle.Bold,
-              fontSize = InspectorUIUtility.TitleFontSize,
-          };
-
-        /// <summary>
-        /// Default style for foldouts with large font size title
-        /// </summary>
         public static readonly GUIStyle TitleFoldoutStyle =
           new GUIStyle(EditorStyles.foldout)
           {
-              //fontStyle = FontStyle.,
+              fontStyle = FontStyle.Bold,
               fontSize = InspectorUIUtility.TitleFontSize,
           };
 

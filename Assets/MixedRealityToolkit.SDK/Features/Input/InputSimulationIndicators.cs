@@ -3,7 +3,10 @@
 
 // Input simulation service is only built on editor platforms
 
+using Microsoft.MixedReality.Toolkit.Utilities;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.Toolkit.Input
@@ -12,7 +15,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
     /// A row of indicator buttons to control input simulation features.
     /// </summary>
     [Serializable]
-    [AddComponentMenu("Scripts/MRTK/SDK/InputSimulationIndicators")]
     public class InputSimulationIndicators : MonoBehaviour
     {
         /// <summary>
@@ -58,7 +60,10 @@ namespace Microsoft.MixedReality.Toolkit.Input
             {
                 if (inputSimService == null)
                 {
-                    inputSimService = (CoreServices.InputSystem as IMixedRealityDataProviderAccess).GetDataProvider<IInputSimulationService>();
+                    if (MixedRealityServiceRegistry.TryGetService<IMixedRealityInputSystem>(out IMixedRealityInputSystem inputSystem))
+                    {
+                        inputSimService = (inputSystem as IMixedRealityDataProviderAccess).GetDataProvider<IInputSimulationService>();
+                    }
                 }
                 return inputSimService;
             }
@@ -67,7 +72,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         /// <summary>
         /// Updates the left and right hand images according to the tracked state
         /// </summary>
-        private void Update()
+        void Update()
         {
             if (imageHandLeft)
             {

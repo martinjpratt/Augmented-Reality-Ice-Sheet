@@ -39,29 +39,16 @@ namespace Microsoft.MixedReality.Toolkit.Input
         }
 
         [SerializeField]
-        [Tooltip("Check to obtain controller models from the platform SDK. If left unchecked, the global models will be used. Note: this value is overridden by controller definitions.")]
+        [Tooltip("Check to obtain controller models from the platform sdk. If left unchecked, the global models will be used. Note: this value is overridden by controller definitions.")]
         private bool useDefaultModels = false;
 
         /// <summary>
-        /// Check to obtain controller models from the platform SDK. If left unchecked, the global models will be used. Note: this value is overridden by controller definitions.
+        /// Check to obtain controller models from the platform sdk. If left unchecked, the global models will be used. Note: this value is overridden by controller definitions.
         /// </summary>
         public bool UseDefaultModels
         {
             get { return useDefaultModels; }
             private set { useDefaultModels = value; }
-        }
-
-        [SerializeField]
-        [Tooltip("The default controller model material when loading platform SDK controller models. This value is used as a fallback if no controller definition exists with a custom material type.")]
-        private Material defaultControllerModelMaterial;
-
-        /// <summary>
-        /// The default controller model material when loading platform SDK controller models. This value is used as a fallback if no controller definition exists with a custom material type.
-        /// </summary>
-        public Material DefaultControllerModelMaterial
-        {
-            get { return defaultControllerModelMaterial; }
-            private set { defaultControllerModelMaterial = value; }
         }
 
         [SerializeField]
@@ -129,7 +116,7 @@ namespace Microsoft.MixedReality.Toolkit.Input
         }
 
         [SerializeField]
-        private MixedRealityControllerVisualizationSetting[] controllerVisualizationSettings = Array.Empty<MixedRealityControllerVisualizationSetting>();
+        private MixedRealityControllerVisualizationSetting[] controllerVisualizationSettings = new MixedRealityControllerVisualizationSetting[0];
 
         /// <summary>
         /// The current list of controller visualization settings.
@@ -190,25 +177,6 @@ namespace Microsoft.MixedReality.Toolkit.Input
             }
 
             return useDefaultModels;
-        }
-
-        /// <summary>
-        /// Gets the DefaultModelMaterial value defined for the specified controller definition.
-        /// If the requested controller type is not defined, the global DefaultControllerModelMaterial is returned.
-        /// </summary>
-        /// <param name="controllerType">The type of controller to query for</param>
-        /// <param name="hand">The specific hand assigned to the controller</param>
-        public Material GetDefaultControllerModelMaterialOverride(Type controllerType, Handedness hand)
-        {
-            for (int i = 0; i < controllerVisualizationSettings.Length; i++)
-            {
-                if (SettingContainsParameters(controllerVisualizationSettings[i], controllerType, hand))
-                {
-                    return controllerVisualizationSettings[i].DefaultModelMaterial;
-                }
-            }
-
-            return defaultControllerModelMaterial;
         }
 
         private bool SettingContainsParameters(MixedRealityControllerVisualizationSetting setting, Type controllerType, Handedness hand)

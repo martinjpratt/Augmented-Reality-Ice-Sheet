@@ -24,12 +24,9 @@ namespace Microsoft.MixedReality.Toolkit.Inspectors
 
         public override void OnInspectorGUI()
         {
-            if (!RenderProfileHeader(ProfileTitle, string.Empty, target, true, BackProfileType.Input))
-            {
-                return;
-            }
+            RenderProfileHeader(ProfileTitle, string.Empty, target, true, BackProfileType.Input);
 
-            using (new EditorGUI.DisabledGroupScope(IsProfileLock((BaseMixedRealityProfile)target)))
+            using (new GUIEnabledWrapper(!IsProfileLock((BaseMixedRealityProfile)target)))
             {
                 serializedObject.Update();
                 EditorGUILayout.PropertyField(smoothEyeTracking);

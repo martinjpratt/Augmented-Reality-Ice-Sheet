@@ -2,7 +2,9 @@
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 
 namespace Microsoft.MixedReality.Toolkit
@@ -390,7 +392,7 @@ namespace Microsoft.MixedReality.Toolkit
         /// <remarks>
         /// The list is sorted in ascending priority order.
         /// </remarks>
-        public static IReadOnlyList<IMixedRealityService> GetAllServices()
+        public static IReadOnlyCollection<IMixedRealityService> GetAllServices()
         {
             return allServices;
         }
@@ -398,7 +400,7 @@ namespace Microsoft.MixedReality.Toolkit
         /// <summary>
         /// Returns readonly list of all services registered for given registrar
         /// </summary>
-        /// <param name="registrar">Registrar object to filter services by</param>
+        /// <param name="registrar">Registrar object to filter sevices by</param>
         /// <remarks>
         /// The list is sorted in ascending priority order.
         /// </remarks>

@@ -15,7 +15,7 @@ namespace Microsoft.MixedReality.Toolkit.SpatialAwareness
     public class MixedRealitySpatialAwarenessSystemProfile : BaseMixedRealityProfile
     {
         [SerializeField]
-        private MixedRealitySpatialObserverConfiguration[] observerConfigurations = System.Array.Empty<MixedRealitySpatialObserverConfiguration>();
+        private MixedRealitySpatialObserverConfiguration[] observerConfigurations = new MixedRealitySpatialObserverConfiguration[0];
 
         public MixedRealitySpatialObserverConfiguration[] ObserverConfigurations
         {

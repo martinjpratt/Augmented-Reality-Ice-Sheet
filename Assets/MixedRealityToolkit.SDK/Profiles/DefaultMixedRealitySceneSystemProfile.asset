@@ -18,7 +18,7 @@ MonoBehaviour:
     Name: DefaultManagerScene
     Path: Assets/MixedRealityToolkit.SDK/StandardAssets/Scenes/DefaultManagerScene.unity
     Included: 1
-    BuildIndex: -1
+    BuildIndex: 0
     Tag: Untagged
     Asset: {fileID: 102900000, guid: ae7bb08d297fb69408695d8de0962524, type: 3}
   useLightingScene: 1
@@ -26,29 +26,11 @@ MonoBehaviour:
   lightingScenes:
   - Name: DefaultLightingScene
     Path: Assets/MixedRealityToolkit.SDK/StandardAssets/Scenes/DefaultLightingScene.unity
-    Included: 0
-    BuildIndex: -1
+    Included: 1
+    BuildIndex: 1
     Tag: Untagged
     Asset: {fileID: 102900000, guid: 7e54e36c44f826c438c95da79f8de638, type: 3}
-  contentScenes:
-  - Name: UILoader
-    Path: Assets/Scenes/UILoader.unity
-    Included: 1
-    BuildIndex: -1
-    Tag: Untagged
-    Asset: {fileID: 102900000, guid: e9ab2d1c8bff4472988067acd1bec680, type: 3}
-  - Name: ImageryBrowser
-    Path: Assets/Scenes/ImageryBrowser.unity
-    Included: 1
-    BuildIndex: -1
-    Tag: Untagged
-    Asset: {fileID: 102900000, guid: e47fb077caff84dedaea5f12c3e709dc, type: 3}
-  - Name: MassBalance
-    Path: Assets/Scenes/MassBalance.unity
-    Included: 1
-    BuildIndex: 0
-    Tag: Untagged
-    Asset: {fileID: 102900000, guid: 9fc0d4010bbf28b4594072e72b8655ab, type: 3}
+  contentScenes: []
   permittedLightingSceneComponentTypes:
   - reference: UnityEngine.Transform, UnityEngine.CoreModule
   - reference: UnityEngine.GameObject, UnityEngine.CoreModule
