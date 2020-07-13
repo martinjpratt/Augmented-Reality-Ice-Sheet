@@ -33,6 +33,7 @@ The model is interactive, the user can change the mass balance over part of the 
 
 Augmented reality is now possible on most new mobile devices. The makes the ability to visualize this 3D model possible using a video feed from a single camera. Computer vision techniques allow for the placement of a virtual 3D object in the real world - creating an augmented reality experience.
 
+![alt text](https://miro.medium.com/max/4796/1*utP0VPFetrz6ZUi9vtYlDQ.png "AR systems for iOS and Android")
 
 ## HoloLens
 
