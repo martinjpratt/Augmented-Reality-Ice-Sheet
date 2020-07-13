@@ -18,16 +18,23 @@ The SIA is computationally efficient, so lends itself well to real time animatio
 
 ## WebGL
 
+The WebGL version allows for the model to be run in a browser window, making it the most accessible option.
+
 The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position and the UI slider.
 
 [![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGLcapture.PNG "AR Ice Sheet screenshot")](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGLcapture.PNG)
 
 [To test it out, visit the WebGL version of the application here](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
 
+
 ## MobileAR
+
+Augmented reality is now possible on most new mobile devices. The makes the ability to visualize this 3D model possible using a video feed from a single camera. Computer vision techniques allow for the placement of a virtual 3D object in the real world - creating an augmented reality experience.
 
 
 ## HoloLens
+
+The Microsoft HoloLens head mounted display provides the truest personal AR experience, handsfree and stereo imaging allow for an accurate 3D visualization, and spatial cameras allow for scanning of real world surfaces. This means we can have virtual objects be influenced by the real world.
 
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/0/02/Ramahololens.jpg "Microsoft Hololens")
 
