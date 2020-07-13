@@ -1,4 +1,4 @@
-Augmented Reality Ice Sheet - WebGL version
+<h1>Augmented Reality Ice Sheet<\h1>
 
 This is the source code for the development of an AR Ice Sheet; a Unity project that simulates the 3D deformation of an ice sheet based on the Shallow Ice Approximation (SIA). The codebase was developed from this paper from Ed Bueler: [Numerical Modelling of Ice Sheets, Streams, and Shelves](https://glaciers.gi.alaska.edu/sites/default/files/Notes_icesheetmod_Bueler2014.pdf)
 
