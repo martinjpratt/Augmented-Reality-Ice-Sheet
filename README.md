@@ -84,17 +84,27 @@ Scan around the room as the Spatial Mapping will be active and requires a surfac
 
 **Setting the bed:**
 
-You will be able to adjust the bed elevation and of the bed by airtap and holding on the bed surface. There is a toggle switch on the left that will allow you to switch to decreasing elevation. There are also a couple of presets:
+You will be able to adjust the bed elevation and of the bed by airtap and holding on the bed surface. There is a toggle switch on the left that will allow you to switch to decreasing elevation. There are also a few of presets:
 
   1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
   2. a 'mountain' bed, which provides a good setup for building glaciers.
+  3. an AR Surface. This option makes use of the HoloLens's spatial mapping capabilities. Selecting this option drapes the bed surface over any objects that exist within the bounds of the model space. Use the option to make the ice flow around real world objects. Make sure that the model is fixed in place before selecting this option, otherwise this can lead to an inconsistent AR experience!
   
-Once you're happy with the bed, click 'Set Bed'.
+Once you're happy with the bed, click 'Set Bed'. If you've selected AR Surface, then the bed will disappear with only the bounds of the models space displayed.
 
 **Setting the ice surface:**
 
+We need to set the initial condition for the ice surface. This can be one of three options:
+
+  1. a 'generic' ice sheet surface which is essentially a snapshot of an ice sheet if it formed on perfectly flat terrain.
+  2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data.
+  3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run.
+
+Now we're ready to start the model.
+
 **Running the model:**
 
+Hit the 'Play' button at the bottom of the model space to begin. The model will begin with mass balance set so that ice will accumulate wherever the mouse pointer is located on the model surface.
 
 ## Build environments
 
