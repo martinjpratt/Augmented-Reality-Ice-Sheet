@@ -80,6 +80,8 @@ On deployment, open the app on the HoloLens.
 
 You will be presented with a loader screen and a Start button - airtap it to begin.
 
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_loader.jpg "Loading screen")
+
 Scan around the room as the Spatial Mapping will be active and requires a surface to place the model space on. The model space will be placed a small distance above where you airtap, but will also be occluded by any real world objects within the model space area. Once the model space has been placed, you can move or resize it using the Set Position button at the top-left. **When moving the model space around, be careful not to move it through the floor as you won't be able to retrieve it!**
 
 **Setting the bed:**
