@@ -70,5 +70,14 @@ Current build environment
 
 | Program          | Development Versions       |
 | ---------------- | ------------- |
-| Unity            | 2017.4.2f2 / 2019.2.0f1 / 2019.3.10f1    |
+| Unity            | 2017.4.2f2 (WebGL) / 2019.2.0f1 (HoloLens) / 2019.3.10f1 (MobileAR)    |
 | Visual Studio 19 | 15.8.9        |
+
+## Acknowledgements
+
+The AR Ice Sheet application was developed by the Fossett Laboratory for Planetary Exploration at Washington University in St. Louis, and the Lamont Doherty Earth Observatory at Columbia University, New York.
+
+The project was funded by grant ### from the ###
+
+For enquiries about the app development please email Martin Pratt at martin.pratt@wustl.edu or reach out to him on Twitter @sympathy4data
+For enquiries about the science behind the app, please email...
