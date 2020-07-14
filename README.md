@@ -22,11 +22,33 @@ The SIA is computationally efficient, so lends itself well to real time animatio
 
 The WebGL version allows for the model to be run in a browser window, making it the most accessible option.
 
-The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position and the UI slider.
+The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position and the Mass Balance slider bar.
 
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGLcapture.PNG "AR Ice Sheet screenshot")
+First, set the bed properties. On starting the app, you will be able to navigate around the model using mouse controls, and also be able to deform the bed using the left-mouse button to increase elevation, and the right-mouse button to decrease elevation. There are also a couple of presets:
 
-[To test it out, visit the WebGL version of the application here](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
+1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
+2. a 'mountain' bed, which provides a good setup for building glaciers.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_BedView.PNG "AR Ice Sheet bed screenshot")
+
+Once you're happy with the bed, click 'Set Bed'.
+
+Secondly, we need to set the initial condition for the ice surface. This can be one of three options:
+
+1. a 'generic' ice sheet surface which is essentially a snapshot of an ice sheet if it formed on perfectly flat terrain.
+2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data.
+3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_IceView.PNG "AR Ice Sheet ice surface screenshot")
+
+Now we're ready to start the model.
+
+Hit the 'Play' button to begin. The model will begin with mass balance set so that ice will accumulate wherever the mouse pointer is located on the model surface.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelView.PNG "AR Ice Sheet ice surface screenshot")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelViewSun.PNG "AR Ice Sheet ice surface screenshot")
+
+[To try it out, visit the WebGL version of the application here](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
 
 
 ## MobileAR
