@@ -25,6 +25,7 @@ The WebGL version allows for the model to be run in a browser window, making it 
 The model is interactive, the user can change the mass balance over part of the ice sheet to add or remove ice - thus raising or lowering the height of the ice sheet surface. This is controlled using the cursor position and the Mass Balance slider bar.
 
 **Setting the bed:**
+
 On starting the app, you will be able to navigate around the model using mouse controls, and also be able to deform the bed using the left-mouse button to increase elevation, and the right-mouse button to decrease elevation. There are also a couple of presets:
 
   1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
@@ -35,6 +36,7 @@ On starting the app, you will be able to navigate around the model using mouse c
 Once you're happy with the bed, click 'Set Bed'.
 
 **Setting the ice surface:**
+
 We need to set the initial condition for the ice surface. This can be one of three options:
 
   1. a 'generic' ice sheet surface which is essentially a snapshot of an ice sheet if it formed on perfectly flat terrain.
@@ -46,6 +48,7 @@ We need to set the initial condition for the ice surface. This can be one of thr
 Now we're ready to start the model.
 
 **Running the model:**
+
 Hit the 'Play' button to begin. The model will begin with mass balance set so that ice will accumulate wherever the mouse pointer is located on the model surface.
 
 ![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelView.png "Model running and building an ice sheet")
@@ -79,7 +82,8 @@ You will be presented with a loader screen and a Start button - airtap it to beg
 
 Scan around the room as the Spatial Mapping will be active and requires a surface to place the model space on. The model space will be placed a small distance above where you airtap, but will also be occluded by any real world objects within the model space area. Once the model space has been placed, you can move or resize it using the Set Position button at the top-left. **When moving the model space around, be careful not to move it through the floor as you won't be able to retrieve it!**
 
-1. Setting the bed:
+**Setting the bed:**
+
 You will be able to adjust the bed elevation and of the bed by airtap and holding on the bed surface. There is a toggle switch on the left that will allow you to switch to decreasing elevation. There are also a couple of presets:
 
   1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
@@ -87,9 +91,9 @@ You will be able to adjust the bed elevation and of the bed by airtap and holdin
   
 Once you're happy with the bed, click 'Set Bed'.
 
-2. Setting the ice surface:
+**Setting the ice surface:**
 
-3. Running the model:
+**Running the model:**
 
 
 ## Build environments
