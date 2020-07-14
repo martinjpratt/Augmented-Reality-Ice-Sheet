@@ -60,7 +60,7 @@ Augmented reality is now possible on most new mobile devices. The makes the abil
 
 ![alt text](https://miro.medium.com/max/4796/1*utP0VPFetrz6ZUi9vtYlDQ.png "AR systems for iOS and Android")
 
-Currently the app is still in beta and not released on the app stores at this time. As such any person wanting to install the app on their own mobile device will need to download the MobileAR branch, build a new version in Unity and then deploy it to their development device using XCode or Android Studio.
+Currently the app is still in beta and not released on the app stores at this time. As such any person wanting to install the app on their own mobile device will need to download the MobileAR branch, build a new version in Unity targeting iOS or Android, and then deploy it to their development device using XCode or Android Studio.
 
 ## HoloLens
 
@@ -68,12 +68,24 @@ The Microsoft HoloLens head mounted display provides the truest personal AR expe
 
 ![alt text](https://upload.wikimedia.org/wikipedia/commons/0/02/Ramahololens.jpg "Microsoft Hololens")
 
+Again, currently the app is still in beta and not released on the Microsoft store at this time. As such any person wanting to install the app on their own mobile device will need to download the HoloLens branch, build a new version in Unity targeting UWP, and then deploy it to their development device using Visual Studio.
+
+On deployment, open the app on the HoloLens.
+
+You will be presented with a loader screen and a Start button - airtap it to begin.
+
+Scan around the room as the Spatial Mapping will be active and requires a surface to place the model space on. The model space will be placed a small distance above where you airtap, but will also be occluded by any real world objects within the model space area. Once the model space has been placed, you can move or resize it using the Set Position button at the top-left. **When moving the model space around, be careful not to move it through the floor as you won't be able to retrieve it!**
+
+
+
 ## Build environments
 
 | Program          | Development Versions       |
 | ---------------- | ------------- |
 | Unity            | 2017.4.2f2 (WebGL) / 2019.2.0f1 (HoloLens) / 2019.3.10f1 (MobileAR)    |
 | Visual Studio 19 | 15.8.9        |
+| XCode            |               |
+| Android Studio   |               |
 
 ## Acknowledgements
 
