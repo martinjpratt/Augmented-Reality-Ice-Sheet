@@ -104,7 +104,9 @@ Now we're ready to start the model.
 
 **Running the model:**
 
-Hit the 'Play' button at the bottom of the model space to begin. The model will begin with mass balance set so that ice will accumulate wherever the mouse pointer is located on the model surface.
+Hit the 'Play' button at the bottom of the model space to begin. The model will begin with mass balance set so that ice will accumulate beneath wherever the cloud or sun is located above the model surface.
+
+You can also set the mass balance to be negative and 'melt' the ice sheet you've created.
 
 ## Build environments
 
@@ -121,5 +123,5 @@ The AR Ice Sheet application was developed by the Fossett Laboratory for Planeta
 
 The project was funded by grant ### from the ###
 
-For enquiries about the app development please email Martin Pratt at martin.pratt@wustl.edu or reach out to him on Twitter @sympathy4data
+For enquiries about the app development please email Martin Pratt at martin.pratt@wustl.edu or reach out to him on Twitter: @sympathy4data
 For enquiries about the science behind the app, please email...
