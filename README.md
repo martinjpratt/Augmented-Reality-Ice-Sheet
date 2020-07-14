@@ -57,7 +57,7 @@ You can also set the mass balance to be negative and 'melt' the ice sheet you've
 
 ![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelViewSun.png "The sun 'melting' a mountain glacier")
 
-[To try it out, visit the WebGL version of the application here](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
+[**To try it out, visit the WebGL version of the application here**](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
 
 
 ## MobileAR
