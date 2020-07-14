@@ -41,7 +41,7 @@ We need to set the initial condition for the ice surface. This can be one of thr
 
   1. a 'generic' ice sheet surface which is essentially a snapshot of an ice sheet if it formed on perfectly flat terrain.
   2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data.
-  3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run.
+  3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run. Use this with the mountain bed surface to ensure the model is accurate on play.
 
 ![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_IceView.png "A generic ice sheet surface")
 
@@ -98,7 +98,7 @@ We need to set the initial condition for the ice surface. This can be one of thr
 
   1. a 'generic' ice sheet surface which is essentially a snapshot of an ice sheet if it formed on perfectly flat terrain.
   2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data.
-  3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run.
+  3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run. This should be selected when using the AR Surface or Mountain beds to ensure the model is accurate on play.
 
 Now we're ready to start the model.
 
