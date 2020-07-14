@@ -46,6 +46,9 @@ Now we're ready to start the model.
 Hit the 'Play' button to begin. The model will begin with mass balance set so that ice will accumulate wherever the mouse pointer is located on the model surface.
 
 ![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelView.png "Model running and building an ice sheet")
+
+You can also set the mass balance to be negative and 'melt' the ice sheet you've created.
+
 ![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelViewSun.png "The sun 'melting' a mountain glacier")
 
 [To try it out, visit the WebGL version of the application here](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
