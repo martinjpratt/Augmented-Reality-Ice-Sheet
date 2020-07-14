@@ -123,5 +123,5 @@ The AR Ice Sheet application was developed by the Fossett Laboratory for Planeta
 
 The project was funded by grant ### from the ###
 
-For enquiries about the app development please email Martin Pratt at martin.pratt@wustl.edu or reach out to him on Twitter: @sympathy4data
+For enquiries about the app development by @martinjpratt please email Martin Pratt at martin.pratt@wustl.edu or reach out to him on Twitter: @sympathy4data
 For enquiries about the science behind the app, please email...
