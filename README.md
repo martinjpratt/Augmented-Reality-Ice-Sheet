@@ -29,7 +29,7 @@ First, set the bed properties. On starting the app, you will be able to navigate
 1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
 2. a 'mountain' bed, which provides a good setup for building glaciers.
 
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_BedView.PNG "AR Ice Sheet bed screenshot")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_BedView.png "AR Ice Sheet bed screenshot")
 
 Once you're happy with the bed, click 'Set Bed'.
 
@@ -39,14 +39,14 @@ Secondly, we need to set the initial condition for the ice surface. This can be 
 2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data.
 3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run.
 
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_IceView.PNG "AR Ice Sheet ice surface screenshot")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_IceView.png "AR Ice Sheet ice surface screenshot")
 
 Now we're ready to start the model.
 
 Hit the 'Play' button to begin. The model will begin with mass balance set so that ice will accumulate wherever the mouse pointer is located on the model surface.
 
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelView.PNG "AR Ice Sheet ice surface screenshot")
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelViewSun.PNG "AR Ice Sheet ice surface screenshot")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelView.png "AR Ice Sheet ice surface screenshot")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/WebGL_ModelViewSun.png "AR Ice Sheet ice surface screenshot")
 
 [To try it out, visit the WebGL version of the application here](https://martinjpratt.github.io/Augmented-Reality-Ice-Sheet/App3D/index.html)
 
