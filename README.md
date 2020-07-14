@@ -84,13 +84,21 @@ You will be presented with a loader screen and a Start button - airtap it to beg
 
 Scan around the room as the Spatial Mapping will be active and requires a surface to place the model space on. The model space will be placed a small distance above where you airtap, but will also be occluded by any real world objects within the model space area. Once the model space has been placed, you can move or resize it using the Set Position button at the top-left. **When moving the model space around, be careful not to move it through the floor as you won't be able to retrieve it!**
 
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_modelSpace.jpg "Model space placed on surface - in this case a floor")
+
 **Setting the bed:**
 
 You will be able to adjust the bed elevation and of the bed by airtap and holding on the bed surface. There is a toggle switch on the left that will allow you to switch to decreasing elevation. There are also a few of presets:
 
   1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
   2. a 'mountain' bed, which provides a good setup for building glaciers.
-  3. an AR Surface. This option makes use of the HoloLens's spatial mapping capabilities. Selecting this option drapes the bed surface over any objects that exist within the bounds of the model space. Use the option to make the ice flow around real world objects. Make sure that the model is fixed in place before selecting this option, otherwise this can lead to an inconsistent AR experience!
+  3. an AR Surface. This option makes use of the HoloLens's spatial mapping capabilities. Selecting this option drapes the bed surface over any objects that exist within the bounds of the model space. Use the option to make the ice flow around real world objects. Make sure that the model is fixed in place before selecting this option, otherwise this can lead to an inconsistent AR experience! Keep scanning (moving your head) around the new objects to improve the reconstruction of the real world.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_mountainBed.jpg "Bed set as 'mountain'")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_ARsetup1.jpg "Using objects to deform the bed")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_ARsetup2.jpg "Selecting 'Deform Bed AR' will cause the bed surface to be draped over those objects")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_ARsetup3.jpg "Setting the bed with an AR Surface removes the visible bed surface for a transparent one")
+
   
 Once you're happy with the bed, click 'Set Bed'. If you've selected AR Surface, then the bed will disappear with only the bounds of the models space displayed.
 
@@ -99,7 +107,7 @@ Once you're happy with the bed, click 'Set Bed'. If you've selected AR Surface, 
 We need to set the initial condition for the ice surface. This can be one of three options:
 
   1. a 'generic' ice sheet surface which is essentially a snapshot of an ice sheet if it formed on perfectly flat terrain.
-  2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data.
+  2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data from BEDMAP2.
   3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run. This should be selected when using the AR Surface or Mountain beds to ensure the model is accurate on play.
 
 Now we're ready to start the model.
@@ -108,7 +116,13 @@ Now we're ready to start the model.
 
 Hit the 'Play' button at the bottom of the model space to begin. The model will begin with mass balance set so that ice will accumulate beneath wherever the cloud or sun is located above the model surface.
 
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_ModelViewAR.jpg "Running the model using an AR Surface")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_ModelView.jpg "Running the model using the 'mountain' bed")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_ModelViewAntarctica.jpg "Running the model with an Antarctic initial ice surface model over a 'generic' bed")
+
 You can also set the mass balance to be negative and 'melt' the ice sheet you've created.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/HoloLens_ModelViewSun.jpg "Running the model using the 'mountain' bed with a negative mass balance set")
 
 ## Build environments
 
