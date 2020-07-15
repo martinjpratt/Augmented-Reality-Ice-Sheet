@@ -130,8 +130,8 @@ You can also set the mass balance to be negative and 'melt' the ice sheet you've
 | ---------------- | ------------- |
 | Unity            | 2017.4.2f2 (WebGL) / 2019.2.0f1 (HoloLens) / 2019.3.10f1 (MobileAR)    |
 | Visual Studio 19 | 15.8.9        |
-| XCode            |               |
-| Android Studio   |               |
+| XCode            | 11.5          |
+| Android Studio   | 4.0.1         |
 
 ## Acknowledgements
 
