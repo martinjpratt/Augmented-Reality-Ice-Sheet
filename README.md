@@ -70,7 +70,9 @@ Currently the app is still in beta and not released on the app stores at this ti
 
 The mobile application has a loading UI scene that will allow for further dataset visualization to be added. Currently only the Ice Sheet Model is available. Tap 'Go' and the AR scene will be loaded. A placement indicator will show up on any identified horizontal surface:
 
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_PlacementIndicator.png "Loading screen")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_PlacementIndicator.png "Placement 'Antarctica' indicator on a horizontal surface (a rug!)")
+
+
 
 ## HoloLens
 
