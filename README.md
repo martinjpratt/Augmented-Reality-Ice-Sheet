@@ -78,12 +78,14 @@ By default you will be able to raise and lower areas of the bed by tapping and h
 
 ![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_BedDeformation.png "Deforming the bed using tap and hold")
 
+You can also move the bed to a more convenient location by selecting the 'Move' toggle at the top left - dragging, rotating and scaling using 1- and 2-finger touch gestures. when the move toggle is active, you won't be able to deform the bed by tapping on the surface.
+
 There are also preset bed topography options:
 
   1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
   2. a 'mountain' bed, which provides a good setup for building glaciers.
 
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_mountainBed.png "")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_mountainBed.png "The 'Mountain' bed")
 
 You can see what each icon does by pressing the '?' help button at the top right:
 
@@ -93,8 +95,18 @@ Once you're happy with the bed, click 'Set Bed'.
 
 **Setting the ice surface:**
 
+We need to set the initial condition for the ice surface. This can be one of three options:
+
+  1. a 'generic' ice sheet surface which is essentially a snapshot of an ice sheet if it formed on perfectly flat terrain.
+  2. an Antarctic ice surface, which is in the shape of the Southern Continent and based on real data from BEDMAP2.
+  3. a 'flat' surface, which is essentially no initial ice sheet, and you will start building a surface once the model begins to run. This should be selected when using the AR Surface or Mountain beds to ensure the model is accurate on play.
+
+Now we're ready to start the model.
+
 **Running the model:**
 
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_ModelView.png "Running the model")
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_ModelViewSun.png "Running the model")
 
 ## HoloLens
 
