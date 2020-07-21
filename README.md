@@ -72,6 +72,28 @@ The mobile application has a loading UI scene that will allow for further datase
 
 ![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_PlacementIndicator.png "Placement 'Antarctica' indicator on a horizontal surface (a rug!)")
 
+**Setting the bed:**
+
+By default you will be able to raise and lower areas of the bed by tapping and holding on the bed surface. You can switch between raising and lowering using the toggle slider on the left-hand side.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_BedDeformation.png "Deforming the bed using tap and hold")
+
+There are also preset bed topography options:
+
+  1. a 'generic' undulating bed, similar to bed elevation variations beneath an ice sheet.
+  2. a 'mountain' bed, which provides a good setup for building glaciers.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_mountainBed.png "")
+
+You can see what each icon does by pressing the '?' help button at the top right:
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_Help.png "Pressing the help '?' button")
+
+Once you're happy with the bed, click 'Set Bed'.
+
+**Setting the ice surface:**
+
+**Running the model:**
 
 
 ## HoloLens
