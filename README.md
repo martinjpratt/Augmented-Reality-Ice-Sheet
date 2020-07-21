@@ -105,8 +105,13 @@ Now we're ready to start the model.
 
 **Running the model:**
 
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_ModelView.png "Running the model")
-![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_ModelViewSun.png "Running the model")
+Hit the 'Play' button at the bottom of the model space to begin. The model will begin with mass balance set so that ice will accumulate beneath wherever the cloud or sun is located above the model surface. Move the cloud around by holding down the Cloud/Sun button in the bottom. This will lock the cloud object to a set position in front of the mobile device's screen. Move the mobile device around to move the cloud while holding the Cloud/Sun button.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_ModelView.png "Running the model and moving the cloud by pressing down the cloud button in the bottom right")
+
+You can also set the mass balance to be negative and 'melt' the ice sheet you've created.
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_ModelViewSun.png "Running the model and melting ice")
 
 ## HoloLens
 
