@@ -62,11 +62,15 @@ You can also set the mass balance to be negative and 'melt' the ice sheet you've
 
 ## MobileAR
 
-Augmented reality is now possible on most new mobile devices. The makes the ability to visualize this 3D model possible using a video feed from a single camera. Computer vision techniques allow for the placement of a virtual 3D object in the real world - creating an augmented reality experience. The application makes use of Unity's AR Foundation code base which allows for simultaneous deployment to both Apple's ARKit and Google's ARCore APIs.
+Augmented reality is now possible on most new mobile devices, see [here for iOS compatibility](https://www.apple.com/augmented-reality/) and [here for Android compatibility](https://developers.google.com/ar/discover/supported-devices). The makes the ability to visualize this 3D model possible using a video feed from a single camera. Computer vision techniques allow for the placement of a virtual 3D object in the real world - creating an augmented reality experience. The application makes use of Unity's AR Foundation code base which allows for simultaneous deployment to both Apple's ARKit and Google's ARCore APIs.
 
 ![alt text](https://miro.medium.com/max/4796/1*utP0VPFetrz6ZUi9vtYlDQ.png "AR systems for iOS and Android")
 
-Currently the app is still in beta and not released on the app stores at this time. As such any person wanting to install the app on their own mobile device will need to download the MobileAR branch, build a new version in Unity targeting iOS or Android, and then deploy it to their development device using XCode or Android Studio.
+Currently the app is still in beta and not released on the app stores at this time. As such any person wanting to install the app on their own mobile device will need to download the MobileAR branch, build a new version in Unity targeting iOS or Android, and then deploy it to their development device using XCode or building to Android from Unity.
+
+The mobile application has a loading UI scene that will allow for further dataset visualization to be added. Currently only the Ice Sheet Model is available. Tap 'Go' and the AR scene will be loaded. A placement indicator will show up on any identified horizontal surface:
+
+![alt text](https://raw.githubusercontent.com/martinjpratt/Augmented-Reality-Ice-Sheet/master/docs/Mobile_PlacementIndicator.png "Loading screen")
 
 ## HoloLens
 
