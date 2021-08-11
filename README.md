@@ -182,8 +182,8 @@ You can also set the mass balance to be negative and 'melt' the ice sheet you've
 
 The AR Ice Sheet application was developed by the Fossett Laboratory for Planetary Exploration at Washington University in St. Louis, and the Lamont Doherty Earth Observatory at Columbia University, New York.
 
-The project was funded by grant ### from the ###
+The project was funded by the National Science Foundation, award number [1743310](https://www.nsf.gov/awardsearch/showAward?AWD_ID=1743310).
 
 For enquiries about the app development by please email Martin Pratt at martin.pratt@wustl.edu or reach out to him on Twitter: @sympathy4data
 
-For enquiries about the science behind the app, please email...
+For enquiries about the science behind the app, please email Jonathan Kingslake, Lamont-Doherty Earth Observatory, Columbia University, at j.kingslake@columbia.edu.
